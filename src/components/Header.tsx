@@ -55,6 +55,12 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
             Inicio
           </button>
           <button
+            onClick={() => handleNavClick('servicios')}
+            className="px-space-md py-1.5 rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all"
+          >
+            Servicios
+          </button>
+          <button
             onClick={() => handleNavClick('quienes-somos')}
             className="px-space-md py-1.5 rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all"
           >
@@ -64,25 +70,24 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
             onClick={() => handleNavClick('mision-y-vision')}
             className="px-space-md py-1.5 rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all"
           >
-            Misión y Visión
+            Misión y Valores
           </button>
           <button
-            onClick={() => handleNavClick('valores')}
-            className="px-space-md py-1.5 rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all"
+            onClick={() => onNavigate('rastreo')}
+            className={`px-space-md py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1 ${
+              currentPage === 'rastreo'
+                ? 'bg-secondary text-on-secondary font-bold shadow-sm'
+                : 'text-secondary font-semibold hover:bg-surface-container-high'
+            }`}
           >
-            Valores
-          </button>
-          <button
-            onClick={() => handleNavClick('servicios')}
-            className="px-space-md py-1.5 rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all"
-          >
-            Servicios
+            <span className="material-symbols-outlined text-sm">travel_explore</span>
+            <span>Rastrear Pedido</span>
           </button>
           <button
             onClick={() => handleNavClick('contacto')}
             className="px-space-md py-1.5 rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all"
           >
-            Preguntas y Contacto
+            Contacto
           </button>
         </nav>
 
@@ -108,21 +113,18 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
             <span>Agendar Recogida</span>
           </button>
 
-          <div className="flex items-center gap-space-xs pl-space-xs">
-            <button
-              onClick={() => handleNavClick('contacto')}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
-              title="Ubicación de tienda"
-              type="button"
-            >
-              <span className="material-symbols-outlined text-base">location_on</span>
-            </button>
-            <img
-              alt="Profile"
-              className="w-8 h-8 rounded-full object-cover shadow-[0_2px_8px_rgba(123,104,238,0.15)]"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdSGE2uFcgelAnm3Loq0LS_C5fsngPFV6E2pTjCWDc266nn_7z8qFDXCnz9OBkVFICx5GvSRS2o7YZEb6n4ofsHtQSFKCYzAvdCdv5d5iXloMvqW1isIm64Ebu4fFFUJVAtveAOR6jUcKr9HT80w2bxRYVOZa8GjR0KhfudYEi-Wmd-P-4uHGr6ZRhRqrWAtJg-SCwnCes35FaIOfSOywoZCUlJfso50JMI-0xJuE"
-            />
-          </div>
+          <button
+            onClick={() => onNavigate('admin')}
+            className={`w-9 h-9 flex items-center justify-center rounded-full transition-all shadow-sm ${
+              currentPage === 'admin'
+                ? 'bg-primary text-on-primary ring-2 ring-primary-container'
+                : 'bg-surface-container-low text-on-surface-variant hover:bg-primary-fixed hover:text-primary'
+            }`}
+            title="Panel de Administrador"
+            type="button"
+          >
+            <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
+          </button>
 
           {/* Mobile hamburger menu button */}
           <button
@@ -178,6 +180,30 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
               className="text-left px-4 py-2.5 rounded-xl font-label-md text-label-md hover:bg-surface-container-low"
             >
               Preguntas y Contacto
+            </button>
+            <button
+              onClick={() => {
+                onNavigate('rastreo');
+                setMobileMenuOpen(false);
+              }}
+              className={`text-left px-4 py-2.5 rounded-xl font-label-md text-label-md flex items-center gap-2 ${
+                currentPage === 'rastreo' ? 'bg-secondary text-on-secondary font-bold' : 'text-secondary hover:bg-surface-container-low font-semibold'
+              }`}
+            >
+              <span className="material-symbols-outlined text-base">travel_explore</span>
+              <span>Rastrear mi Folio</span>
+            </button>
+            <button
+              onClick={() => {
+                onNavigate('admin');
+                setMobileMenuOpen(false);
+              }}
+              className={`text-left px-4 py-2.5 rounded-xl font-label-md text-label-md flex items-center gap-2 ${
+                currentPage === 'admin' ? 'bg-primary text-on-primary font-bold' : 'hover:bg-surface-container-low text-primary font-semibold'
+              }`}
+            >
+              <span className="material-symbols-outlined text-base">admin_panel_settings</span>
+              <span>Panel de Administrador</span>
             </button>
             <button
               onClick={() => {

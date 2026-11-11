@@ -71,13 +71,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                   <span className="material-symbols-outlined text-lg">local_shipping</span>
                   <span>Agendar Recogida a Domicilio</span>
                 </button>
-                <a
-                  href="#servicios"
+                <button
+                  onClick={() => onNavigate('rastreo')}
                   className="inline-flex items-center justify-center gap-space-xs px-space-lg py-3.5 rounded-full bg-surface-container-low text-secondary font-label-lg text-label-lg hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-all"
                 >
-                  <span className="material-symbols-outlined text-lg">dry_cleaning</span>
-                  <span>Ver Servicios y Tarifas</span>
-                </a>
+                  <span className="material-symbols-outlined text-lg">travel_explore</span>
+                  <span>Rastrear mi Folio</span>
+                </button>
               </div>
 
               {/* Trust Badges & Guarantee Row */}

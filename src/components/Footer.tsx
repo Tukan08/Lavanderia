@@ -118,10 +118,22 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 Valores
               </button>
               <button
+                onClick={() => onNavigate('rastreo')}
+                className="text-left text-secondary font-medium hover:underline flex items-center gap-1"
+              >
+                <span>Rastrear Pedido</span>
+              </button>
+              <button
                 onClick={() => onNavigate('agendar')}
                 className="text-left text-primary font-medium hover:underline"
               >
                 Agendar
+              </button>
+              <button
+                onClick={() => onNavigate('admin')}
+                className="text-left text-on-surface-variant hover:text-primary transition-colors text-xs"
+              >
+                Panel Admin
               </button>
             </div>
             <div className="pt-space-xs">

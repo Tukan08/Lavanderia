@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { PageType, BookingQuantities } from '../types';
+import { PageType, BookingQuantities, Order } from '../types';
+import { saveOrder, generateFolio } from '../utils/orderStorage';
 
 interface AgendarPageProps {
   onNavigate: (page: PageType, sectionId?: string) => void;
+  onOrderCreated?: (folio: string) => void;
 }
 
 const PRICES = {
@@ -14,7 +16,7 @@ const PRICES = {
   tenisZapatos: 30,
 };
 
-export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
+export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate, onOrderCreated }) => {
   // Quantities
   const [quantities, setQuantities] = useState<BookingQuantities>({
     kilosRopa: 5,
@@ -25,7 +27,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
     peluches: 0,
   });
 
-  // Peluche notes
+  // Peluche size
   const [pelucheSizes, setPelucheSizes] = useState<string>('Mediano');
 
   // Delivery speed
@@ -44,13 +46,23 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
   const [postalCode, setPostalCode] = useState('06700');
   const [notes, setNotes] = useState('');
 
-  // Date & Slot
-  const [selectedDay, setSelectedDay] = useState('Hoy');
-  const [selectedSlot, setSelectedSlot] = useState('Mediodía');
+  // Date setup (today & tomorrow helper)
+  const todayISO = new Date().toISOString().split('T')[0];
+  const tomorrowDate = new Date(Date.now() + 86400000);
+  const tomorrowISO = tomorrowDate.toISOString().split('T')[0];
+  const dayAfterTomorrow = new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0];
+
+  const [selectedDate, setSelectedDate] = useState(todayISO);
+  const [selectedSlot, setSelectedSlot] = useState('Mediodía (12:00 - 15:00)');
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'transfer' | 'cash'>('cash');
 
-  // Submit Modal
+  // Validation errors
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [copiedFolio, setCopiedFolio] = useState(false);
+
+  // Submit Modal & Generated Order
   const [orderConfirmed, setOrderConfirmed] = useState(false);
+  const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
 
   // Handlers
   const updateQty = (key: keyof BookingQuantities, delta: number) => {
@@ -72,8 +84,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
   const discount = subtotal * 0.10;
   const total = Math.max(0, subtotal - discount);
 
-  const formatCurrency = (val: number) =>
-    `$${val.toFixed(2)} MXN`;
+  const formatCurrency = (val: number) => `$${val.toFixed(2)} MXN`;
 
   const totalItemsCount =
     quantities.kilosRopa +
@@ -84,11 +95,88 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
     quantities.peluches;
 
   const handleConfirmOrder = () => {
+    const errors: string[] = [];
+
+    if (!name.trim()) {
+      errors.push('Por favor ingresa tu nombre completo.');
+    }
+    if (!phone.trim() || phone.replace(/\D/g, '').length < 8) {
+      errors.push('Por favor ingresa un número de teléfono o WhatsApp válido.');
+    }
+    if (!street.trim()) {
+      errors.push('Por favor ingresa tu dirección de recogida.');
+    }
     if (totalItemsCount === 0) {
-      alert('Por favor selecciona al menos un servicio, prenda o kilo de ropa para tu recogida.');
+      errors.push('Por favor selecciona al menos un servicio, prenda o kilo de ropa.');
+    }
+
+    if (errors.length > 0) {
+      setValidationErrors(errors);
+      window.scrollTo({ top: 300, behavior: 'smooth' });
       return;
     }
+
+    setValidationErrors([]);
+
+    // Generate unique Folio
+    const newFolio = generateFolio();
+
+    const newOrder: Order = {
+      folio: newFolio,
+      createdAt: new Date().toISOString(),
+      customerName: name.trim(),
+      customerPhone: phone.trim(),
+      address: street.trim(),
+      floor: floor.trim(),
+      postalCode: postalCode.trim(),
+      notes: notes.trim(),
+      quantities,
+      pelucheSize: quantities.peluches > 0 ? pelucheSizes : undefined,
+      speed,
+      pickupDate: selectedDate,
+      pickupSlot: selectedSlot,
+      detergent,
+      coldWater,
+      organicSoftener,
+      paymentMethod,
+      subtotal,
+      discount,
+      total,
+      status: 'AGENDADO',
+      statusUpdatedAt: new Date().toISOString(),
+    };
+
+    saveOrder(newOrder);
+    setCreatedOrder(newOrder);
     setOrderConfirmed(true);
+
+    if (onOrderCreated) {
+      onOrderCreated(newFolio);
+    }
+  };
+
+  const handleCopyFolio = () => {
+    if (createdOrder) {
+      navigator.clipboard.writeText(createdOrder.folio);
+      setCopiedFolio(true);
+      setTimeout(() => setCopiedFolio(false), 2000);
+    }
+  };
+
+  // Helper for human date preview
+  const formatFriendlyDate = (dateStr: string) => {
+    try {
+      const parts = dateStr.split('-');
+      const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      return d.toLocaleDateString('es-MX', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch {
+      return dateStr;
+    }
   };
 
   return (
@@ -114,7 +202,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
             </nav>
             <span className="inline-flex items-center gap-1.5 px-space-md py-1 bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm rounded-full shadow-sm">
               <span className="material-symbols-outlined text-xs text-secondary animate-pulse">timer</span>
-              Reserva en menos de 2 minutos
+              Generación de Folio Inmediata
             </span>
           </div>
           <div className="max-w-3xl">
@@ -122,10 +210,25 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
               Agenda la Recogida de tus Prendas
             </h1>
             <p className="font-body-lg text-body-lg text-on-surface-variant mt-1">
-              Servicio por kilo, cobijas, tenis y peluches con entrega a domicilio estándar o express el mismo día.
+              Selecciona tus prendas o kilos de ropa, elige fecha y franja horaria en el calendario y recibe tu folio de seguimiento en tiempo real.
             </p>
           </div>
         </div>
+
+        {/* Validation Errors Notice */}
+        {validationErrors.length > 0 && (
+          <div className="mb-space-md p-space-md rounded-2xl bg-error-container text-on-error-container text-body-sm shadow-sm space-y-1 animate-fade-in border border-error/30">
+            <div className="flex items-center gap-2 font-bold font-title-md">
+              <span className="material-symbols-outlined text-xl">warning</span>
+              <span>Por favor completa los siguientes campos:</span>
+            </div>
+            <ul className="list-disc list-inside space-y-0.5 text-xs sm:text-sm pl-2">
+              {validationErrors.map((err, i) => (
+                <li key={i}>{err}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Visual Stepper Progress Bar */}
         <div className="bg-surface-container-lowest rounded-xl p-space-md lg:p-space-lg shadow-sm mb-space-xl">
@@ -157,7 +260,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
               </div>
               <div className="min-w-0">
                 <p className="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">Paso 3</p>
-                <p className="font-label-lg text-label-lg text-on-surface truncate">Fecha & Horario</p>
+                <p className="font-label-lg text-label-lg text-on-surface truncate">Fecha & Calendario</p>
               </div>
             </div>
             {/* Step 4 */}
@@ -167,11 +270,10 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
               </div>
               <div className="min-w-0">
                 <p className="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">Paso 4</p>
-                <p className="font-label-lg text-label-lg text-on-surface truncate">Pago y Entrega</p>
+                <p className="font-label-lg text-label-lg text-on-surface truncate">Confirmar & Folio</p>
               </div>
             </div>
           </div>
-          {/* Progress Bar Track */}
           <div className="w-full bg-surface-container-high h-1.5 rounded-full mt-space-md overflow-hidden">
             <div className="bg-primary h-full w-2/5 rounded-full transition-all duration-500"></div>
           </div>
@@ -188,7 +290,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                   <span className="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-label-md">1</span>
                   <div>
                     <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">Selecciona tus Servicios y Cantidades</h2>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">Precios transparentes en pesos mexicanos (MXN)</p>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">Precios en pesos mexicanos ($ MXN)</p>
                   </div>
                 </div>
                 <span className="hidden sm:inline-flex px-3 py-1 bg-surface-container-low text-secondary font-label-sm text-label-sm rounded-full">
@@ -433,10 +535,10 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
 
               {/* Peluche size detail dropdown if > 0 */}
               {quantities.peluches > 0 && (
-                <div className="p-space-sm bg-surface-container rounded-xl flex items-center justify-between gap-space-sm">
+                <div className="p-space-sm bg-surface-container rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-primary text-lg">info</span>
-                    <span className="font-body-sm text-body-sm text-on-surface">Tamaño principal de tus peluches:</span>
+                    <span className="font-body-sm text-body-sm text-on-surface">Tamaño de tus peluches:</span>
                   </div>
                   <select
                     value={pelucheSizes}
@@ -451,7 +553,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                 </div>
               )}
 
-              {/* Custom Washing Preferences */}
+              {/* Preferences */}
               <div className="pt-space-md space-y-space-md">
                 <h4 className="font-title-md text-title-md text-on-surface font-semibold flex items-center gap-2">
                   <span className="material-symbols-outlined text-secondary text-lg">tune</span>
@@ -526,49 +628,58 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
               <div className="flex items-center gap-space-sm">
                 <span className="w-8 h-8 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center font-bold text-label-md">2</span>
                 <div>
-                  <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">Dirección de Recogida & Contacto</h2>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant">Nuestro repartidor de Las Danis pasará por tus prendas</p>
+                  <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">Datos de Contacto y Dirección</h2>
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">Obligatorios para emitir tu folio y coordinar la entrega</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-space-md">
                 <div>
-                  <label className="block font-label-md text-label-md text-on-surface mb-1">Nombre Completo *</label>
+                  <label className="block font-label-md text-label-md text-on-surface mb-1 font-semibold">
+                    Nombre Completo <span className="text-primary">*</span>
+                  </label>
                   <input
-                    className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all"
-                    placeholder="Tu nombre completo"
+                    className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all border border-outline-variant"
+                    placeholder="Ej. Daniela Morales"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block font-label-md text-label-md text-on-surface mb-1">Teléfono Móvil / WhatsApp *</label>
+                  <label className="block font-label-md text-label-md text-on-surface mb-1 font-semibold">
+                    Teléfono Móvil / WhatsApp <span className="text-primary">*</span>
+                  </label>
                   <div className="flex items-center">
-                    <span className="px-3 py-2.5 bg-surface-container text-on-surface-variant rounded-l-lg font-label-md text-label-md">+52</span>
+                    <span className="px-3 py-2.5 bg-surface-container text-on-surface-variant rounded-l-lg font-label-md text-label-md border-y border-l border-outline-variant">+52</span>
                     <input
-                      className="w-full px-space-md py-2.5 rounded-r-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all"
+                      className="w-full px-space-md py-2.5 rounded-r-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all border border-outline-variant"
                       placeholder="55 1234 5678"
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
+                      required
                     />
                   </div>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block font-label-md text-label-md text-on-surface mb-1">Calle, Número y Colonia *</label>
+                  <label className="block font-label-md text-label-md text-on-surface mb-1 font-semibold">
+                    Calle, Número y Colonia <span className="text-primary">*</span>
+                  </label>
                   <input
-                    className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all"
+                    className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all border border-outline-variant"
                     placeholder="Ej. Av. Insurgentes Sur 450, Col. Roma"
                     type="text"
                     value={street}
                     onChange={(e) => setStreet(e.target.value)}
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block font-label-md text-label-md text-on-surface mb-1">Piso / Depto / Interior</label>
+                  <label className="block font-label-md text-label-md text-on-surface mb-1 font-semibold">Piso / Depto / Interior</label>
                   <input
-                    className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all"
+                    className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all border border-outline-variant"
                     placeholder="Ej. Depto 402"
                     type="text"
                     value={floor}
@@ -576,9 +687,9 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                   />
                 </div>
                 <div>
-                  <label className="block font-label-md text-label-md text-on-surface mb-1">Código Postal *</label>
+                  <label className="block font-label-md text-label-md text-on-surface mb-1 font-semibold">Código Postal</label>
                   <input
-                    className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all"
+                    className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all border border-outline-variant"
                     placeholder="06700"
                     type="text"
                     value={postalCode}
@@ -586,10 +697,10 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block font-label-md text-label-md text-on-surface mb-1">Instrucciones o referencias (Opcional)</label>
+                  <label className="block font-label-md text-label-md text-on-surface mb-1 font-semibold">Instrucciones o Referencias (Opcional)</label>
                   <textarea
-                    className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all resize-none"
-                    placeholder="Ej. Portón negro, avisar en caseta de vigilancia, etc."
+                    className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all resize-none border border-outline-variant"
+                    placeholder="Ej. Portón negro, avisar al conserje de entrada, tocar timbre 4B, etc."
                     rows={2}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
@@ -598,13 +709,13 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            {/* SECTION 3: Date, Slot & Delivery Speed */}
+            {/* SECTION 3: Accessible Date & Calendar Picker */}
             <div className="bg-surface-container-lowest rounded-xl p-space-lg lg:p-space-xl shadow-sm space-y-space-lg">
               <div className="flex items-center gap-space-sm">
                 <span className="w-8 h-8 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-bold text-label-md">3</span>
                 <div>
-                  <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">Fecha, Franja y Velocidad de Entrega</h2>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant">Selecciona cuándo pasamos y la velocidad deseada</p>
+                  <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">Fecha, Calendario y Horario</h2>
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">Selecciona el día exacto en el calendario accesible</p>
                 </div>
               </div>
 
@@ -657,40 +768,83 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                         <span className="font-label-md text-label-md font-bold text-primary">$22 MXN / kg</span>
                       </div>
                       <p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
-                        <strong>¡Entrega el mismo día!</strong> Recogemos por la mañana y te entregamos por la tarde/noche.
+                        <strong>¡Entrega el mismo día!</strong> Recogemos por la mañana y devolvemos por la tarde/noche.
                       </p>
                     </div>
                   </label>
                 </div>
               </div>
 
-              {/* Day Selector Pills */}
-              <div className="space-y-space-xs pt-space-xs">
-                <label className="font-label-md text-label-md text-on-surface-variant block font-semibold">Día de Recogida:</label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-space-sm">
-                  {[
-                    { key: 'Hoy', label: 'Hoy', date: 'Jueves 24', status: 'Disponible' },
-                    { key: 'Mañana', label: 'Mañana', date: 'Viernes 25', status: 'Franjas libres' },
-                    { key: 'Sábado', label: 'Fin de semana', date: 'Sábado 26', status: 'Mañana sólo' },
-                    { key: 'Lunes', label: 'Próximo', date: 'Lunes 28', status: 'Completo' },
-                  ].map((d) => (
-                    <button
-                      key={d.key}
-                      onClick={() => setSelectedDay(d.key)}
-                      className={`p-space-sm rounded-xl flex flex-col items-center justify-center transition-all ${
-                        selectedDay === d.key
-                          ? 'bg-primary text-on-primary shadow-md shadow-primary/20'
-                          : 'bg-surface-container-low hover:bg-surface-container text-on-surface'
-                      }`}
-                      type="button"
-                    >
-                      <span className="font-label-sm text-label-sm opacity-90 uppercase">{d.label}</span>
-                      <span className="font-title-md text-title-md font-bold">{d.date}</span>
-                      <span className={`font-label-sm text-label-sm ${selectedDay === d.key ? 'opacity-90' : 'text-secondary'}`}>
-                        {d.status}
-                      </span>
-                    </button>
-                  ))}
+              {/* Accessible Interactive Date Picker */}
+              <div className="space-y-space-sm pt-space-xs">
+                <label className="font-label-md text-label-md text-on-surface-variant block font-semibold">
+                  Selecciona la Fecha de Recogida:
+                </label>
+
+                {/* Quick Date Chips */}
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDate(todayISO)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                      selectedDate === todayISO
+                        ? 'bg-primary text-on-primary shadow-sm'
+                        : 'bg-surface-container-low text-on-surface hover:bg-surface-container'
+                    }`}
+                  >
+                    Hoy ({todayISO})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDate(tomorrowISO)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                      selectedDate === tomorrowISO
+                        ? 'bg-primary text-on-primary shadow-sm'
+                        : 'bg-surface-container-low text-on-surface hover:bg-surface-container'
+                    }`}
+                  >
+                    Mañana ({tomorrowISO})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDate(dayAfterTomorrow)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                      selectedDate === dayAfterTomorrow
+                        ? 'bg-primary text-on-primary shadow-sm'
+                        : 'bg-surface-container-low text-on-surface hover:bg-surface-container'
+                    }`}
+                  >
+                    En 2 días ({dayAfterTomorrow})
+                  </button>
+                </div>
+
+                {/* Calendar Input Component */}
+                <div className="p-space-md bg-surface-container-low rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm border border-surface-container-high">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-primary-fixed text-primary flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-2xl">calendar_month</span>
+                    </div>
+                    <div>
+                      <p className="font-label-sm text-label-sm text-on-surface-variant font-medium">Fecha elegida:</p>
+                      <p className="font-title-md text-title-md font-bold text-on-surface capitalize">
+                        {formatFriendlyDate(selectedDate)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="date"
+                      min={todayISO}
+                      value={selectedDate}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          setSelectedDate(e.target.value);
+                        }
+                      }}
+                      className="px-3 py-2 rounded-xl bg-surface text-on-surface font-title-md text-sm border border-outline-variant focus:outline-none focus:ring-2 focus:ring-primary shadow-sm cursor-pointer"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -699,10 +853,10 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                 <label className="font-label-md text-label-md text-on-surface-variant block font-semibold">Franja Horaria:</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-space-sm">
                   {[
-                    { key: 'Mañana', title: 'Mañana', time: '08:30 - 11:30' },
-                    { key: 'Mediodía', title: 'Mediodía', time: '12:00 - 15:00' },
-                    { key: 'Tarde', title: 'Tarde', time: '16:00 - 19:00' },
-                    { key: 'Noche', title: 'Noche', time: '19:30 - 21:30' },
+                    { key: 'Mañana (08:30 - 11:30)', title: 'Mañana', time: '08:30 - 11:30' },
+                    { key: 'Mediodía (12:00 - 15:00)', title: 'Mediodía', time: '12:00 - 15:00' },
+                    { key: 'Tarde (16:00 - 19:00)', title: 'Tarde', time: '16:00 - 19:00' },
+                    { key: 'Noche (19:30 - 21:30)', title: 'Noche', time: '19:30 - 21:30' },
                   ].map((slot) => {
                     const isSelected = selectedSlot === slot.key;
                     return (
@@ -737,7 +891,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
 
           {/* RIGHT COLUMN: Sticky Order Summary & Checkout */}
           <div className="lg:col-span-4 space-y-space-lg lg:sticky lg:top-24">
-            <div className="bg-surface-container-lowest rounded-xl p-space-lg shadow-md space-y-space-md">
+            <div className="bg-surface-container-lowest rounded-xl p-space-lg shadow-md space-y-space-md border border-surface-container-high">
               <div className="flex items-center justify-between pb-space-sm border-b border-surface-container-low">
                 <h3 className="font-title-md text-title-md text-on-surface font-bold">Resumen de tu Recogida</h3>
                 <span className="material-symbols-outlined text-primary">local_shipping</span>
@@ -839,7 +993,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                   </span>
                 </div>
                 <p className="font-label-sm text-label-sm text-on-surface-variant">
-                  {quantities.peluches > 0 ? '* Total base + cotización final de peluches al recibir.' : 'Precios en pesos mexicanos (MXN).'}
+                  {quantities.peluches > 0 ? '* Total base + cotización final de peluches al recibir.' : 'Precios en pesos mexicanos ($ MXN).'}
                 </p>
               </div>
 
@@ -890,119 +1044,98 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                 type="button"
               >
                 <span className="material-symbols-outlined text-lg">local_shipping</span>
-                <span>Confirmar y Agendar Recogida</span>
+                <span>Confirmar y Generar Folio</span>
               </button>
 
               <p className="font-label-sm text-label-sm text-center text-on-surface-variant">
-                Cancela o reprograma sin costo avisando con 1 hora de anticipación.
+                Se guardará tu solicitud y se asignará un folio único para rastrear tu ropa en todo momento.
               </p>
             </div>
-
-            {/* Trust & Quality Guarantees Bento */}
-            <div className="grid grid-cols-1 gap-space-xs">
-              <div className="p-space-sm bg-surface-container-lowest rounded-xl flex items-center gap-space-sm shadow-sm">
-                <div className="w-10 h-10 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-xl">format_image_left</span>
-                </div>
-                <div>
-                  <p className="font-label-md text-label-md font-bold text-on-surface">Garantía Textil 100%</p>
-                  <p className="font-label-sm text-label-sm text-on-surface-variant">Cuidado o reposición de tus prendas favoritas.</p>
-                </div>
-              </div>
-              <div className="p-space-sm bg-surface-container-lowest rounded-xl flex items-center gap-space-sm shadow-sm">
-                <div className="w-10 h-10 rounded-full bg-primary-fixed text-primary flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-xl">mark_chat_unread</span>
-                </div>
-                <div>
-                  <p className="font-label-md text-label-md font-bold text-on-surface">Avisos en Tiempo Real</p>
-                  <p className="font-label-sm text-label-sm text-on-surface-variant">Actualización por WhatsApp del estado del pedido.</p>
-                </div>
-              </div>
-              <div className="p-space-sm bg-surface-container-lowest rounded-xl flex items-center gap-space-sm shadow-sm">
-                <div className="w-10 h-10 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-xl">compost</span>
-                </div>
-                <div>
-                  <p className="font-label-md text-label-md font-bold text-on-surface">Bolsas Selladas e Higiénicas</p>
-                  <p className="font-label-sm text-label-sm text-on-surface-variant">Máxima higiene, libre de polvo y 100% ecológico.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Micro Section: Frequently Asked Questions Mini Ribbon */}
-        <div className="mt-space-xl p-space-lg bg-surface-container-low rounded-xl flex flex-col md:flex-row items-center justify-between gap-space-md">
-          <div className="flex items-center gap-space-md">
-            <span className="material-symbols-outlined text-3xl text-secondary">help_center</span>
-            <div>
-              <h4 className="font-title-md text-title-md font-bold text-on-surface">¿Tienes alguna duda sobre tus prendas o peluches?</h4>
-              <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Consulta cómo pesamos tu ropa o indícanos detalles específicos al repartidor.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-space-sm shrink-0">
-            <button
-              onClick={() => onNavigate('inicio', 'contacto')}
-              className="px-space-md py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:text-primary transition-colors shadow-sm"
-            >
-              Preguntas Frecuentes
-            </button>
-            <a
-              className="px-space-md py-2 rounded-full bg-secondary text-on-secondary font-label-md text-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-colors shadow-sm flex items-center gap-1.5"
-              href="https://wa.me/525598765432"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <span className="material-symbols-outlined text-sm">chat</span>
-              WhatsApp Las Danis
-            </a>
           </div>
         </div>
       </div>
 
-      {/* Confirmation Modal */}
-      {orderConfirmed && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/50 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-surface max-w-lg w-full rounded-[2rem] p-space-lg md:p-space-xl shadow-2xl space-y-space-md text-center border border-surface-container-high">
+      {/* Confirmation Modal with Generated Folio */}
+      {orderConfirmed && createdOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/60 backdrop-blur-sm p-4 animate-fade-in overflow-y-auto">
+          <div className="bg-surface max-w-lg w-full rounded-[2.5rem] p-space-lg md:p-space-xl shadow-2xl space-y-space-md text-center border border-surface-container-high my-8">
             <div className="w-16 h-16 rounded-full bg-primary-fixed text-primary flex items-center justify-center mx-auto shadow-md">
               <span className="material-symbols-outlined text-4xl">check_circle</span>
             </div>
-            <h3 className="font-headline-md text-headline-md text-on-surface font-bold">¡Recogida Agendada con Éxito!</h3>
-            <p className="font-body-md text-body-md text-on-surface-variant">
-              Hemos reservado tu recogida para <strong>{selectedDay}</strong> en la franja de <strong>{selectedSlot}</strong> en <strong>{street}, {floor}</strong>.
-            </p>
-            <div className="bg-surface-container-low p-space-md rounded-2xl text-left space-y-1 font-body-sm text-body-sm">
+
+            <div className="space-y-1">
+              <h3 className="font-headline-md text-headline-md text-on-surface font-bold">
+                ¡Recogida Agendada con Éxito!
+              </h3>
+              <p className="font-body-sm text-body-sm text-on-surface-variant">
+                Guarda tu folio para dar seguimiento al estado de tu ropa en el taller.
+              </p>
+            </div>
+
+            {/* Big Folio Box */}
+            <div className="bg-primary-fixed/40 p-4 rounded-2xl border-2 border-primary/30 flex items-center justify-between">
+              <div className="text-left">
+                <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Tu Folio de Rastreo:</span>
+                <p className="text-2xl sm:text-3xl font-extrabold text-primary font-mono tracking-wider">
+                  {createdOrder.folio}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleCopyFolio}
+                className="px-3 py-2 rounded-xl bg-primary text-on-primary text-xs font-bold flex items-center gap-1 shadow-sm hover:bg-primary-container transition-all active:scale-95"
+              >
+                <span className="material-symbols-outlined text-base">
+                  {copiedFolio ? 'done' : 'content_copy'}
+                </span>
+                <span>{copiedFolio ? '¡Copiado!' : 'Copiar'}</span>
+              </button>
+            </div>
+
+            {/* Summary details */}
+            <div className="bg-surface-container-low p-space-md rounded-2xl text-left space-y-1.5 font-body-sm text-body-sm">
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Modalidad:</span>
-                <span className="font-semibold text-primary">{speed === 'express' ? '⚡ Express (Mismo Día)' : 'Estándar'}</span>
+                <span className="text-on-surface-variant">Cliente:</span>
+                <span className="font-semibold text-on-surface">{createdOrder.customerName} ({createdOrder.customerPhone})</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Total estimado a pagar:</span>
-                <span className="font-bold text-primary font-title-md">{formatCurrency(total)}</span>
+                <span className="text-on-surface-variant">Fecha y Horario:</span>
+                <span className="font-medium">{createdOrder.pickupDate} ({createdOrder.pickupSlot.split(' ')[0]})</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Método de pago:</span>
-                <span className="capitalize font-medium">
-                  {paymentMethod === 'card' ? 'Tarjeta al recibir' : paymentMethod === 'transfer' ? 'Transferencia / SPEI' : 'Efectivo al recibir'}
+                <span className="text-on-surface-variant">Dirección:</span>
+                <span className="font-medium truncate max-w-[200px]" title={createdOrder.address}>
+                  {createdOrder.address}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-on-surface-variant">Contacto:</span>
-                <span className="font-medium">{name} ({phone})</span>
+              <div className="flex justify-between border-t border-surface-container-high pt-1.5">
+                <span className="text-on-surface-variant font-bold">Total a pagar:</span>
+                <span className="font-extrabold text-primary font-title-md">
+                  {formatCurrency(createdOrder.total)}
+                </span>
               </div>
             </div>
-            <p className="font-label-sm text-label-sm text-on-surface-variant">
-              Te hemos enviado los detalles por WhatsApp para confirmar al momento. ¡Gracias por confiar en Las Danis!
-            </p>
-            <div className="pt-space-xs flex gap-space-sm justify-center">
+
+            {/* Action Buttons */}
+            <div className="pt-space-xs flex flex-col sm:flex-row gap-space-sm justify-center">
+              <button
+                onClick={() => {
+                  setOrderConfirmed(false);
+                  onNavigate('rastreo', createdOrder.folio);
+                }}
+                className="w-full sm:w-auto px-space-lg py-3 rounded-full bg-primary text-on-primary font-label-md text-label-md font-bold shadow-md hover:bg-primary-container transition-all flex items-center justify-center gap-1.5"
+              >
+                <span className="material-symbols-outlined text-base">visibility</span>
+                <span>Rastrear mi Folio Ahora</span>
+              </button>
+
               <button
                 onClick={() => {
                   setOrderConfirmed(false);
                   onNavigate('inicio');
                 }}
-                className="px-space-xl py-3 rounded-full bg-primary text-on-primary font-label-md text-label-md font-bold shadow-md hover:bg-primary-container transition-all"
+                className="w-full sm:w-auto px-space-lg py-3 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md font-semibold hover:bg-surface-container transition-colors"
               >
                 Volver al Inicio
               </button>
