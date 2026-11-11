@@ -278,7 +278,7 @@ export const RastreoPage: React.FC<RastreoPageProps> = ({ onNavigate, initialFol
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs">
                 <a
-                  href={`https://wa.me/525598765432?text=${encodeURIComponent(
+                  href={`https://wa.me/527353797626?text=${encodeURIComponent(
                     `Hola Las Danis, tengo una duda sobre mi folio ${order.folio} a nombre de ${order.customerName}`
                   )}`}
                   target="_blank"

@@ -40,7 +40,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate, onOrderCre
 
   // Address & Contact
   const [name, setName] = useState('Daniela Morales');
-  const [phone, setPhone] = useState('55 9876 5432');
+  const [phone, setPhone] = useState('735 379 7626');
   const [street, setStreet] = useState('Av. Insurgentes Sur 450');
   const [floor, setFloor] = useState('Depto 402');
   const [postalCode, setPostalCode] = useState('06700');
@@ -655,7 +655,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate, onOrderCre
                     <span className="px-3 py-2.5 bg-surface-container text-on-surface-variant rounded-l-lg font-label-md text-label-md border-y border-l border-outline-variant">+52</span>
                     <input
                       className="w-full px-space-md py-2.5 rounded-r-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all border border-outline-variant"
-                      placeholder="55 1234 5678"
+                      placeholder="735 379 7626"
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}

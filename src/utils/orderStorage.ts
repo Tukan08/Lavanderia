@@ -16,7 +16,7 @@ const INITIAL_DEMO_ORDERS: Order[] = [
     folio: 'LD-8492',
     createdAt: new Date().toISOString(),
     customerName: 'Daniela Morales',
-    customerPhone: '55 9876 5432',
+    customerPhone: '735 379 7626',
     address: 'Av. Insurgentes Sur 450, Col. Roma',
     floor: 'Depto 402',
     postalCode: '06700',

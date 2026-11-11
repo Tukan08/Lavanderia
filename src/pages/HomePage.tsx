@@ -736,12 +736,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <div className="pt-space-xs flex flex-wrap items-center gap-space-md">
                   <a
                     className="inline-flex items-center gap-space-xs px-space-lg py-3 rounded-full bg-secondary text-on-secondary font-label-lg text-label-lg shadow-md hover:bg-on-secondary-container transition-all hover:shadow-lg active:scale-95"
-                    href="https://wa.me/525598765432"
+                    href="https://wa.me/527353797626"
                     rel="noopener noreferrer"
                     target="_blank"
                   >
                     <span className="material-symbols-outlined text-lg">chat</span>
-                    <span>Pedir directo por WhatsApp</span>
+                    <span>Pedir directo por WhatsApp (735 379 7626)</span>
                   </a>
                   <div className="flex items-center gap-2 text-on-surface font-label-md text-label-md">
                     <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
@@ -795,7 +795,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                           <label className="block font-label-sm text-label-sm text-on-surface font-semibold mb-1">Teléfono / WhatsApp</label>
                           <input
                             className="w-full px-space-md py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:bg-surface focus:shadow-md transition-all placeholder:text-outline"
-                            placeholder="+52 55 1234 5678"
+                            placeholder="735 379 7626"
                             required
                             type="tel"
                             value={formData.phone}

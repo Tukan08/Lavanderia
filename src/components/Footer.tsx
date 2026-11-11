@@ -29,7 +29,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <div className="flex items-center gap-space-xs pt-space-xs">
               <a
                 className="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:bg-secondary hover:text-on-secondary transition-all shadow-[0_2px_8px_rgba(0,98,160,0.15)]"
-                href="https://wa.me/34612345678"
+                href="https://wa.me/527353797626"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="WhatsApp"
@@ -74,11 +74,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               </div>
               <div className="flex items-center gap-space-xs">
                 <span className="material-symbols-outlined text-secondary text-base shrink-0">call</span>
-                <span>+52 55 1234 5678</span>
+                <span>+52 735 379 7626</span>
               </div>
               <div className="flex items-center gap-space-xs">
                 <span className="material-symbols-outlined text-secondary text-base shrink-0">mark_chat_unread</span>
-                <span className="text-secondary font-medium">WhatsApp Directo: +52 55 9876 5432</span>
+                <span className="text-secondary font-medium">WhatsApp Directo: +52 735 379 7626</span>
               </div>
             </div>
           </div>
