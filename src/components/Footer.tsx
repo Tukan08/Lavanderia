@@ -18,8 +18,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             >
               <img
                 alt="Logotipo Lavandería Las Danis"
-                className="h-7 w-auto object-contain"
-                src="https://lh3.googleusercontent.com/aida/ALJJyrCd1F6-G9UpWc0atdkT2uFx10gHLzp8yTY9ilf0fpUoHpqcsZdqZOuFuUArPge92ZqKU6z5ibCc6WKJ5QJk1dVZ7madmk1eDUNBJ4d93ngI18ozPRmOf0mwfqtVpZb8fpZ97D6pf6gW0jdBtCeahDiOGAIZNZflCMMNF8bLFZT11nhdc46XReUHQ8eC8x9Z3vgOT5vbK3I2ILCxhbYT8Bhz09FtkhJVOWdaLiS9A9sd"
+                className="h-9 w-auto object-contain rounded-lg shadow-sm"
+                src="/img/Logo.jpeg"
               />
               <span className="font-title-md text-title-md text-primary font-bold">Las Danis</span>
             </div>

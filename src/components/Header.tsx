@@ -33,8 +33,8 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
         >
           <img
             alt="Logotipo Lavandería Las Danis"
-            className="h-8 w-auto object-contain"
-            src="https://lh3.googleusercontent.com/aida/ALJJyrCd1F6-G9UpWc0atdkT2uFx10gHLzp8yTY9ilf0fpUoHpqcsZdqZOuFuUArPge92ZqKU6z5ibCc6WKJ5QJk1dVZ7madmk1eDUNBJ4d93ngI18ozPRmOf0mwfqtVpZb8fpZ97D6pf6gW0jdBtCeahDiOGAIZNZflCMMNF8bLFZT11nhdc46XReUHQ8eC8x9Z3vgOT5vbK3I2ILCxhbYT8Bhz09FtkhJVOWdaLiS9A9sd"
+            className="h-10 w-auto object-contain rounded-lg shadow-sm"
+            src="/img/Logo.jpeg"
           />
           <div className="flex flex-col">
             <span className="font-title-md text-title-md text-primary font-bold tracking-tight leading-none">Las Danis</span>

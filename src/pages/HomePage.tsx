@@ -103,8 +103,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <div className="relative rounded-[2.5rem] overflow-hidden bg-surface-container-high shadow-xl aspect-[4/5] flex items-center justify-center">
                   <img
                     className="w-full h-full object-cover"
-                    alt="Boutique atelier Las Danis con toallas limpias y fragancia de lavanda"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCumaP7FA70k-xYh2xJ62EFbXUSWwBbr5ilnSAUmXBzwjOOZd6O1X_SMNh6fQ2MjOspZYjhsL76nULcyRtpmvuqokEHYKCciQsONnoDvTckxex3UpuVmmQTItJfuUlSU3NcJ_xOHI2QYY6HfH3C9i3cz0a3v32BX6oOxKbX_L0jIgDjbH4B_ttytz3vmd82peMZQM_mX9AbBOFLW7p9PwlLYg4pwaREzKx6MPS9F0I"
+                    alt="Lavandería Las Danis - Precios y Servicios"
+                    src="/img/Lavanderia_Precios.jpeg"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent"></div>
                 </div>
@@ -162,8 +162,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <div className="relative rounded-2xl overflow-hidden shadow-md aspect-[4/3] bg-surface-container-high">
                   <img
                     className="w-full h-full object-cover"
-                    alt="Manos doblando prendas de lino y algodón con delicadeza"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwi5_RKeWjaCNBCbIapSA2d8rAqMhxisEeHVzrR5qc-IhAHFuodoYf5vqbdDmNXW118dMe0WXjRgbs_pIUsMLFW5ObSLDSouaNqB5DEelpJmzMvI7C0QRQiJMcj2i4LUegUl3krvxEQ-Ri7Un-zwAZWzEkmm0X-wO_Jo_324fIB3mon0Rmjv6zbExPEsk_xwmtggFdV1J0NEa_KBREahNuIYU3HxmbHkg1y4fYRuE"
+                    alt="Cuidado y dedicación en Lavandería Las Danis"
+                    src="/img/Img_1.jpeg"
                   />
                 </div>
                 <div className="p-space-md bg-surface rounded-2xl shadow-sm flex items-start gap-space-sm">
