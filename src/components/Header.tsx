@@ -89,11 +89,11 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
         {/* Header Right Actions */}
         <div className="flex items-center gap-space-sm shrink-0">
           <a
-            href="tel:+34900123456"
+            href="tel:+525512345678"
             className="hidden md:flex items-center gap-space-xs px-space-sm py-1 bg-surface-container-low rounded-full text-secondary font-label-md text-label-md hover:bg-surface-container transition-colors"
           >
             <span className="material-symbols-outlined text-secondary text-sm">phone_in_talk</span>
-            <span>+34 900 123 456</span>
+            <span>+52 55 1234 5678</span>
           </a>
 
           <button

@@ -4,7 +4,7 @@ export interface ServiceItem {
   id: string;
   name: string;
   description: string;
-  price: number;
+  price: number | string;
   unit: string;
   badge?: string;
   image?: string;
@@ -12,10 +12,12 @@ export interface ServiceItem {
 }
 
 export interface BookingQuantities {
-  diario: number;
-  grande: number;
-  delicadas: number;
-  nordicos: number;
+  kilosRopa: number;
+  cobijaIndividual: number;
+  cobijaMatrimonial: number;
+  cobijaKing: number;
+  tenisZapatos: number;
+  peluches: number;
 }
 
 export interface BookingFormState {
@@ -31,6 +33,5 @@ export interface BookingFormState {
   selectedDate: string;
   selectedSlot: string;
   speed: 'standard' | 'express';
-  hasIronPack: boolean;
-  paymentMethod: 'card' | 'bizum' | 'cash';
+  paymentMethod: 'card' | 'transfer' | 'cash';
 }

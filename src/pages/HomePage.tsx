@@ -519,13 +519,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
           {/* 4 Services Bento Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter-desktop">
-            {/* Service 1 */}
+            {/* Service 1: Ropa por Kilo */}
             <div className="bg-surface p-space-lg rounded-3xl shadow-sm hover:shadow-lg transition-all flex flex-col justify-between space-y-space-md">
               <div className="space-y-space-sm">
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-surface-container">
                   <img
                     className="w-full h-full object-cover"
-                    alt="Toallas esponjosas dobladas"
+                    alt="Ropa limpia y toallas dobladas por kilo"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuAm06QjsZLY8BqaDUDJ_3Yn2sX--nbtoxKPuN0nfC44hV9xKu7RHskAci3QLf_xx0r9-cDqDeEdvE8JE94opyj3KkrMOJ9-cVBR8PBI-vCRPRGoQv5lQGpDUXWMQD9abr_0arhqnG7xKjETYsY6UsgvX5x8ceQNeAfP0iP_vr_y8CebLE_WihjhCw1XZmE4kdNtreAa3r_KG8-1s6hYcNF2dGSFuyJeB8pvkIx3s8s"
                   />
                   <span className="absolute top-2.5 left-2.5 bg-surface/90 backdrop-blur-sm text-primary font-label-sm text-label-sm font-bold px-space-sm py-0.5 rounded-full">
@@ -533,122 +533,139 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                   </span>
                 </div>
                 <div className="space-y-space-xs">
-                  <h3 className="font-title-md text-title-md text-on-surface font-bold">Lavado & Doblado x Kilo</h3>
+                  <h3 className="font-title-md text-title-md text-on-surface font-bold">Ropa por Kilo</h3>
                   <p className="font-body-sm text-body-sm text-on-surface-variant">
-                    Ideal para ropa de diario, camisetas, toallas y sábanas familiares. Listo para guardar en tu armario sin arrugas.
+                    Lavado, secado suave y doblado impecable. Entrega estándar o express el mismo día.
                   </p>
+                  <div className="pt-1 flex flex-col gap-0.5 text-xs text-on-surface-variant">
+                    <span>• Estándar (24-48h): <strong>$18 MXN / kg</strong></span>
+                    <span>• Express (mismo día): <strong>$22 MXN / kg</strong></span>
+                  </div>
                 </div>
               </div>
               <div className="pt-space-xs flex items-center justify-between border-t border-transparent">
                 <div>
-                  <span className="font-headline-sm text-headline-sm text-primary font-bold">Desde 2.90€</span>
+                  <span className="font-headline-sm text-headline-sm text-primary font-bold">$18 MXN</span>
                   <span className="font-label-sm text-label-sm text-on-surface-variant"> / kg</span>
                 </div>
                 <button
                   onClick={() => onNavigate('agendar')}
                   className="w-10 h-10 rounded-full bg-primary-fixed text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors"
+                  title="Agendar por kilo"
                 >
                   <span className="material-symbols-outlined text-lg">add</span>
                 </button>
               </div>
             </div>
 
-            {/* Service 2 */}
+            {/* Service 2: Cobijas y Edredones */}
             <div className="bg-surface p-space-lg rounded-3xl shadow-sm hover:shadow-lg transition-all flex flex-col justify-between space-y-space-md">
               <div className="space-y-space-sm">
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-surface-container">
                   <img
                     className="w-full h-full object-cover"
-                    alt="Prenda delicada colgada"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUDyT3-CBbKNuYJhPRZVYSbJNIoSoFKqeJQfyJIz4dU-5-pdPHeb3jUmVLx-fs_KD6TOhDVJ_Q1T1JEv0WdaD4DbjmG2NWE4g3zMQYN5MV5jI9dawIj-aTWDNCaPubAKUuurym1TYyboBsMmK2lzt-fhZSFSzuE9q-gU-pYnduTkMRM3N0E5PGGsy3VmnS0dTO2uNBz0G6KvzUGziEc9ADQ3BSfvyY0SQv-YIkkFE"
-                  />
-                  <span className="absolute top-2.5 left-2.5 bg-surface/90 backdrop-blur-sm text-secondary font-label-sm text-label-sm font-bold px-space-sm py-0.5 rounded-full">
-                    Especialistas
-                  </span>
-                </div>
-                <div className="space-y-space-xs">
-                  <h3 className="font-title-md text-title-md text-on-surface font-bold">En Seco & Delicadas</h3>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant">
-                    Trajes de chaqueta, abrigos de lana, sedas naturales y vestidos de fiesta con solventes ecológicos que no agreden las fibras.
-                  </p>
-                </div>
-              </div>
-              <div className="pt-space-xs flex items-center justify-between">
-                <div>
-                  <span className="font-headline-sm text-headline-sm text-secondary font-bold">Desde 7.50€</span>
-                  <span className="font-label-sm text-label-sm text-on-surface-variant"> / prenda</span>
-                </div>
-                <button
-                  onClick={() => onNavigate('agendar')}
-                  className="w-10 h-10 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center hover:bg-secondary hover:text-on-secondary transition-colors"
-                >
-                  <span className="material-symbols-outlined text-lg">add</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Service 3 */}
-            <div className="bg-surface p-space-lg rounded-3xl shadow-sm hover:shadow-lg transition-all flex flex-col justify-between space-y-space-md">
-              <div className="space-y-space-sm">
-                <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-surface-container">
-                  <img
-                    className="w-full h-full object-cover"
-                    alt="Nórdicos y almohadas blancas esponjosas"
+                    alt="Cobijas y edredones acolchados limpios"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnxJUsLHwYd8krsycXPSHYhRGIrjNx7OUcK_DoB6LelooZz-cMduF59qq_2-MFuwYcvc8ngz80UD8EMvLIs0OjNNu6eX_oTCVBsmOmgfLbuJgs8Bm22tNUEISO1r8uEeFd4ijHmiJ3iA84MkZcDzBFSoRtrk17U-9uHr2pCTVisfsEN-FRKWBAgkYi4zNCl_pPV4f3lodKnSFGEaFLR7iBimu-0_niNcRRb6PKeSY"
                   />
-                  <span className="absolute top-2.5 left-2.5 bg-surface/90 backdrop-blur-sm text-tertiary font-label-sm text-label-sm font-bold px-space-sm py-0.5 rounded-full">
+                  <span className="absolute top-2.5 left-2.5 bg-surface/90 backdrop-blur-sm text-secondary font-label-sm text-label-sm font-bold px-space-sm py-0.5 rounded-full">
                     Hogar & Confort
                   </span>
                 </div>
                 <div className="space-y-space-xs">
-                  <h3 className="font-title-md text-title-md text-on-surface font-bold">Blancos & Plumones</h3>
+                  <h3 className="font-title-md text-title-md text-on-surface font-bold">Cobijas y Edredones</h3>
                   <p className="font-body-sm text-body-sm text-on-surface-variant">
-                    Tratamiento desodorizante y anti-ácaros para edredones térmicos, cortinas pesadas, mantas y alfombras con secado a baja temperatura.
+                    Tratamiento desodorizante y antiácaros con secado esponjoso para todos los tamaños.
                   </p>
+                  <div className="pt-1 flex flex-col gap-0.5 text-xs text-on-surface-variant">
+                    <span>• Individual: <strong>$40 MXN</strong></span>
+                    <span>• Matrimonial: <strong>$45 MXN</strong></span>
+                    <span>• King Size: <strong>$50 MXN</strong></span>
+                  </div>
                 </div>
               </div>
               <div className="pt-space-xs flex items-center justify-between">
                 <div>
-                  <span className="font-headline-sm text-headline-sm text-tertiary font-bold">Desde 14.00€</span>
-                  <span className="font-label-sm text-label-sm text-on-surface-variant"> / unidad</span>
+                  <span className="font-headline-sm text-headline-sm text-secondary font-bold">Desde $40</span>
+                  <span className="font-label-sm text-label-sm text-on-surface-variant"> MXN</span>
                 </div>
                 <button
                   onClick={() => onNavigate('agendar')}
-                  className="w-10 h-10 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center hover:bg-tertiary hover:text-on-tertiary transition-colors"
+                  className="w-10 h-10 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center hover:bg-secondary hover:text-on-secondary transition-colors"
+                  title="Agendar cobijas"
                 >
                   <span className="material-symbols-outlined text-lg">add</span>
                 </button>
               </div>
             </div>
 
-            {/* Service 4 */}
+            {/* Service 3: Tenis y Zapatos */}
             <div className="bg-surface p-space-lg rounded-3xl shadow-sm hover:shadow-lg transition-all flex flex-col justify-between space-y-space-md">
               <div className="space-y-space-sm">
-                <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-surface-container">
-                  <img
-                    className="w-full h-full object-cover"
-                    alt="Moto scooter eléctrica de reparto"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7OAcDnBKUrijcL6aXOfaUy3oiTouDF90z00nG-AGF_xYx66gUpFKt3bMa0V4yfcNoHVPmyyoON_hl_arIvCBCBeZ2pRmY4cGps7DElaqKxcLtfAjgzRxg2RJXicBsDdxcQDeadj7qsV15rznvpwvL0szW04O6Wly93ffxvzwLGrehwPaOXGkpgLQQdYx2_QTedaU4QM5J4NMriBx-ZIVLRAWn7tgL05F7K99ahTA"
-                  />
-                  <span className="absolute top-2.5 left-2.5 bg-surface/90 backdrop-blur-sm text-primary font-label-sm text-label-sm font-bold px-space-sm py-0.5 rounded-full">
-                    Puerta a Puerta
+                <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-surface-container flex items-center justify-center bg-gradient-to-br from-tertiary-fixed/40 to-surface-container">
+                  <div className="w-20 h-20 rounded-3xl bg-surface flex items-center justify-center text-tertiary shadow-md">
+                    <span className="material-symbols-outlined text-5xl">steps</span>
+                  </div>
+                  <span className="absolute top-2.5 left-2.5 bg-surface/90 backdrop-blur-sm text-tertiary font-label-sm text-label-sm font-bold px-space-sm py-0.5 rounded-full">
+                    Cuidado Especial
                   </span>
                 </div>
                 <div className="space-y-space-xs">
-                  <h3 className="font-title-md text-title-md text-on-surface font-bold">Exprés 24h & Reparto</h3>
+                  <h3 className="font-title-md text-title-md text-on-surface font-bold">Tenis y Zapatos</h3>
                   <p className="font-body-sm text-body-sm text-on-surface-variant">
-                    Recogemos en tu domicilio u oficina y te devolvemos tus prendas impecables y planchadas al día siguiente. Gratis desde 25€.
+                    Lavado detallado a mano, desmanchado de suelas, agujetas y desinfección interna profunda.
                   </p>
+                  <div className="pt-1 flex flex-col gap-0.5 text-xs text-on-surface-variant">
+                    <span>• Todo tipo de calzado deportivo y casual</span>
+                    <span>• Secado termorregulado sin deformaciones</span>
+                  </div>
                 </div>
               </div>
               <div className="pt-space-xs flex items-center justify-between">
                 <div>
-                  <span className="font-headline-sm text-headline-sm text-primary font-bold">¡Envío Gratis!</span>
-                  <span className="font-label-sm text-label-sm text-on-surface-variant"> en tu barrio</span>
+                  <span className="font-headline-sm text-headline-sm text-tertiary font-bold">$30 MXN</span>
+                  <span className="font-label-sm text-label-sm text-on-surface-variant"> / par</span>
+                </div>
+                <button
+                  onClick={() => onNavigate('agendar')}
+                  className="w-10 h-10 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center hover:bg-tertiary hover:text-on-tertiary transition-colors"
+                  title="Agendar tenis y zapatos"
+                >
+                  <span className="material-symbols-outlined text-lg">add</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Service 4: Peluches */}
+            <div className="bg-surface p-space-lg rounded-3xl shadow-sm hover:shadow-lg transition-all flex flex-col justify-between space-y-space-md">
+              <div className="space-y-space-sm">
+                <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-surface-container flex items-center justify-center bg-gradient-to-br from-primary-fixed/40 to-surface-container">
+                  <div className="w-20 h-20 rounded-3xl bg-surface flex items-center justify-center text-primary shadow-md">
+                    <span className="material-symbols-outlined text-5xl">toys</span>
+                  </div>
+                  <span className="absolute top-2.5 left-2.5 bg-surface/90 backdrop-blur-sm text-primary font-label-sm text-label-sm font-bold px-space-sm py-0.5 rounded-full">
+                    Delicado & Bebés
+                  </span>
+                </div>
+                <div className="space-y-space-xs">
+                  <h3 className="font-title-md text-title-md text-on-surface font-bold">Lavado de Peluches</h3>
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">
+                    Higienización hipoalergénica, eliminación de polvo y ácaros protegiendo las costuras y relleno.
+                  </p>
+                  <div className="pt-1 flex flex-col gap-0.5 text-xs text-on-surface-variant">
+                    <span>• Chico, Mediano, Grande o Gigante</span>
+                    <span>• Precio cotizado según tamaño</span>
+                  </div>
+                </div>
+              </div>
+              <div className="pt-space-xs flex items-center justify-between">
+                <div>
+                  <span className="font-title-md text-title-md text-primary font-bold">Según tamaño</span>
+                  <span className="font-label-sm text-label-sm text-on-surface-variant"> (Cotización)</span>
                 </div>
                 <button
                   onClick={() => onNavigate('agendar')}
                   className="w-10 h-10 rounded-full bg-primary-fixed text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors"
+                  title="Agendar peluches"
                 >
                   <span className="material-symbols-outlined text-lg">arrow_forward</span>
                 </button>
@@ -719,7 +736,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <div className="pt-space-xs flex flex-wrap items-center gap-space-md">
                   <a
                     className="inline-flex items-center gap-space-xs px-space-lg py-3 rounded-full bg-secondary text-on-secondary font-label-lg text-label-lg shadow-md hover:bg-on-secondary-container transition-all hover:shadow-lg active:scale-95"
-                    href="https://wa.me/34612345678"
+                    href="https://wa.me/525598765432"
                     rel="noopener noreferrer"
                     target="_blank"
                   >
@@ -753,7 +770,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                       <button
                         onClick={() => {
                           setFormSubmitted(false);
-                          setFormData({ name: '', phone: '', address: '', service: 'Lavado & Doblado por Kilo', slot: 'Hoy - Tarde (16:00 - 20:00)' });
+                          setFormData({ name: '', phone: '', address: '', service: 'Ropa por Kilo ($18 normal / $22 express)', slot: 'Hoy - Tarde (16:00 - 20:00)' });
                         }}
                         className="px-space-md py-2 rounded-full bg-primary text-on-primary font-label-sm text-label-sm"
                       >
@@ -778,7 +795,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                           <label className="block font-label-sm text-label-sm text-on-surface font-semibold mb-1">Teléfono / WhatsApp</label>
                           <input
                             className="w-full px-space-md py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:bg-surface focus:shadow-md transition-all placeholder:text-outline"
-                            placeholder="+34 600 000 000"
+                            placeholder="+52 55 1234 5678"
                             required
                             type="tel"
                             value={formData.phone}
@@ -791,7 +808,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                         <label className="block font-label-sm text-label-sm text-on-surface font-semibold mb-1">Dirección de Recogida</label>
                         <input
                           className="w-full px-space-md py-2.5 rounded-xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:bg-surface focus:shadow-md transition-all placeholder:text-outline"
-                          placeholder="Calle, número, piso y puerta"
+                          placeholder="Calle, número, colonia o departamento"
                           required
                           type="text"
                           value={formData.address}
@@ -807,10 +824,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                             value={formData.service}
                             onChange={(e) => setFormData({ ...formData, service: e.target.value })}
                           >
-                            <option>Lavado & Doblado por Kilo</option>
-                            <option>En Seco y Prendas Delicadas</option>
-                            <option>Edredones y Ropa de Cama</option>
-                            <option>Servicio Integral Mixto</option>
+                            <option>Ropa por Kilo ($18 normal / $22 express)</option>
+                            <option>Cobija Individual ($40)</option>
+                            <option>Cobija Matrimonial ($45)</option>
+                            <option>Cobija King Size ($50)</option>
+                            <option>Tenis y Zapatos ($30 / par)</option>
+                            <option>Peluches (Precio según tamaño)</option>
                           </select>
                         </div>
                         <div>

@@ -6,25 +6,29 @@ interface AgendarPageProps {
 }
 
 const PRICES = {
-  diario: 14.50,
-  grande: 26.00,
-  delicadas: 7.50,
-  nordicos: 14.00,
-  ironPack: 12.00,
-  express: 3.00,
+  kiloNormal: 18,
+  kiloExpress: 22,
+  cobijaIndividual: 40,
+  cobijaMatrimonial: 45,
+  cobijaKing: 50,
+  tenisZapatos: 30,
 };
 
 export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
   // Quantities
   const [quantities, setQuantities] = useState<BookingQuantities>({
-    diario: 1,
-    grande: 0,
-    delicadas: 2,
-    nordicos: 0,
+    kilosRopa: 5,
+    cobijaIndividual: 0,
+    cobijaMatrimonial: 1,
+    cobijaKing: 0,
+    tenisZapatos: 1,
+    peluches: 0,
   });
 
-  // Add-ons & speed
-  const [hasIronPack, setHasIronPack] = useState(false);
+  // Peluche notes
+  const [pelucheSizes, setPelucheSizes] = useState<string>('Mediano');
+
+  // Delivery speed
   const [speed, setSpeed] = useState<'standard' | 'express'>('standard');
 
   // Detergent & preferences
@@ -33,17 +37,17 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
   const [organicSoftener, setOrganicSoftener] = useState(true);
 
   // Address & Contact
-  const [name, setName] = useState('Elena Romero Serrano');
-  const [phone, setPhone] = useState('654 987 321');
-  const [street, setStreet] = useState('Calle Velázquez 78');
-  const [floor, setFloor] = useState('Piso 4º - Puerta B');
-  const [postalCode, setPostalCode] = useState('28006');
+  const [name, setName] = useState('Daniela Morales');
+  const [phone, setPhone] = useState('55 9876 5432');
+  const [street, setStreet] = useState('Av. Insurgentes Sur 450');
+  const [floor, setFloor] = useState('Depto 402');
+  const [postalCode, setPostalCode] = useState('06700');
   const [notes, setNotes] = useState('');
 
   // Date & Slot
   const [selectedDay, setSelectedDay] = useState('Hoy');
   const [selectedSlot, setSelectedSlot] = useState('Mediodía');
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'bizum' | 'cash'>('card');
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'transfer' | 'cash'>('cash');
 
   // Submit Modal
   const [orderConfirmed, setOrderConfirmed] = useState(false);
@@ -57,23 +61,31 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
   };
 
   // Calculations
+  const kiloPrice = speed === 'express' ? PRICES.kiloExpress : PRICES.kiloNormal;
   const subtotal =
-    quantities.diario * PRICES.diario +
-    quantities.grande * PRICES.grande +
-    quantities.delicadas * PRICES.delicadas +
-    quantities.nordicos * PRICES.nordicos +
-    (hasIronPack ? PRICES.ironPack : 0) +
-    (speed === 'express' ? PRICES.express : 0);
+    quantities.kilosRopa * kiloPrice +
+    quantities.cobijaIndividual * PRICES.cobijaIndividual +
+    quantities.cobijaMatrimonial * PRICES.cobijaMatrimonial +
+    quantities.cobijaKing * PRICES.cobijaKing +
+    quantities.tenisZapatos * PRICES.tenisZapatos;
 
   const discount = subtotal * 0.10;
   const total = Math.max(0, subtotal - discount);
 
   const formatCurrency = (val: number) =>
-    val.toFixed(2).replace('.', ',') + ' €';
+    `$${val.toFixed(2)} MXN`;
+
+  const totalItemsCount =
+    quantities.kilosRopa +
+    quantities.cobijaIndividual +
+    quantities.cobijaMatrimonial +
+    quantities.cobijaKing +
+    quantities.tenisZapatos +
+    quantities.peluches;
 
   const handleConfirmOrder = () => {
-    if (subtotal === 0) {
-      alert('Por favor selecciona al menos un servicio o prenda para tu recogida.');
+    if (totalItemsCount === 0) {
+      alert('Por favor selecciona al menos un servicio, prenda o kilo de ropa para tu recogida.');
       return;
     }
     setOrderConfirmed(true);
@@ -110,7 +122,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
               Agenda la Recogida de tus Prendas
             </h1>
             <p className="font-body-lg text-body-lg text-on-surface-variant mt-1">
-              Nosotros nos encargamos del lavado, secado, planchado artesanal y entrega impecable directamente en la puerta de tu hogar.
+              Servicio por kilo, cobijas, tenis y peluches con entrega a domicilio estándar o express el mismo día.
             </p>
           </div>
         </div>
@@ -125,7 +137,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
               </div>
               <div className="min-w-0">
                 <p className="font-label-sm text-label-sm text-primary uppercase font-bold tracking-wider">Paso 1</p>
-                <p className="font-label-lg text-label-lg text-on-surface truncate">Servicios & Prendas</p>
+                <p className="font-label-lg text-label-lg text-on-surface truncate">Prendas & Kilos</p>
               </div>
             </div>
             {/* Step 2 */}
@@ -145,7 +157,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
               </div>
               <div className="min-w-0">
                 <p className="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">Paso 3</p>
-                <p className="font-label-lg text-label-lg text-on-surface truncate">Horario de Entrega</p>
+                <p className="font-label-lg text-label-lg text-on-surface truncate">Fecha & Horario</p>
               </div>
             </div>
             {/* Step 4 */}
@@ -155,7 +167,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
               </div>
               <div className="min-w-0">
                 <p className="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">Paso 4</p>
-                <p className="font-label-lg text-label-lg text-on-surface truncate">Pago Flexible</p>
+                <p className="font-label-lg text-label-lg text-on-surface truncate">Pago y Entrega</p>
               </div>
             </div>
           </div>
@@ -175,8 +187,8 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                 <div className="flex items-center gap-space-sm">
                   <span className="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-label-md">1</span>
                   <div>
-                    <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">Selecciona tus Servicios y Prendas</h2>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">Puedes combinar diferentes tipos de cuidado textil en la misma recogida</p>
+                    <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">Selecciona tus Servicios y Cantidades</h2>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">Precios transparentes en pesos mexicanos (MXN)</p>
                   </div>
                 </div>
                 <span className="hidden sm:inline-flex px-3 py-1 bg-surface-container-low text-secondary font-label-sm text-label-sm rounded-full">
@@ -186,35 +198,39 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
 
               {/* Cards Grid for Garment Types */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-space-md">
-                {/* Category Card 1: Ropa de Diario */}
+                {/* 1. Ropa por Kilo */}
                 <div className="p-space-md bg-surface-container-low rounded-xl flex flex-col justify-between hover:shadow-md transition-shadow">
                   <div className="flex items-start gap-space-sm mb-space-sm">
                     <div className="w-12 h-12 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm shrink-0">
                       <span className="material-symbols-outlined text-2xl">local_laundry_service</span>
                     </div>
                     <div>
-                      <h3 className="font-title-md text-title-md text-on-surface font-semibold">Bolsa Diaria (5 kg)</h3>
-                      <p className="font-body-sm text-body-sm text-on-surface-variant">Lavado, secado suave y doblado impecable</p>
-                      <span className="font-title-md text-title-md text-primary font-bold mt-1 inline-block">14,50 €</span>
+                      <h3 className="font-title-md text-title-md text-on-surface font-semibold">Ropa por Kilo</h3>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant">
+                        Lavado, secado suave y doblado ({speed === 'express' ? '$22/kg express' : '$18/kg normal'})
+                      </p>
+                      <span className="font-title-md text-title-md text-primary font-bold mt-1 inline-block">
+                        {speed === 'express' ? '$22.00 MXN / kg' : '$18.00 MXN / kg'}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between pt-space-xs">
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">Bolsas:</span>
+                    <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">Kilos estimados:</span>
                     <div className="flex items-center gap-space-xs bg-surface-container-lowest rounded-full p-1 shadow-sm">
                       <button
                         className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-primary hover:text-on-primary text-on-surface flex items-center justify-center transition-colors"
-                        onClick={() => updateQty('diario', -1)}
+                        onClick={() => updateQty('kilosRopa', -1)}
                         type="button"
-                        aria-label="Restar una bolsa diaria"
+                        aria-label="Restar un kilo"
                       >
                         <span className="material-symbols-outlined text-base">remove</span>
                       </button>
-                      <span className="font-label-lg text-label-lg font-bold w-7 text-center">{quantities.diario}</span>
+                      <span className="font-label-lg text-label-lg font-bold w-10 text-center">{quantities.kilosRopa} kg</span>
                       <button
                         className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-primary hover:text-on-primary text-on-surface flex items-center justify-center transition-colors"
-                        onClick={() => updateQty('diario', 1)}
+                        onClick={() => updateQty('kilosRopa', 1)}
                         type="button"
-                        aria-label="Añadir una bolsa diaria"
+                        aria-label="Añadir un kilo"
                       >
                         <span className="material-symbols-outlined text-base">add</span>
                       </button>
@@ -222,107 +238,191 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                   </div>
                 </div>
 
-                {/* Category Card 2: Bolsa Familiar XL */}
+                {/* 2. Cobijas Individuales */}
                 <div className="p-space-md bg-surface-container-low rounded-xl flex flex-col justify-between hover:shadow-md transition-shadow">
                   <div className="flex items-start gap-space-sm mb-space-sm">
                     <div className="w-12 h-12 rounded-lg bg-surface-container-lowest flex items-center justify-center text-secondary shadow-sm shrink-0">
-                      <span className="material-symbols-outlined text-2xl">shopping_bag</span>
-                    </div>
-                    <div>
-                      <h3 className="font-title-md text-title-md text-on-surface font-semibold">Bolsa Grande XL (10 kg)</h3>
-                      <p className="font-body-sm text-body-sm text-on-surface-variant">Ideal familias o coladas quincenales</p>
-                      <span className="font-title-md text-title-md text-secondary font-bold mt-1 inline-block">26,00 €</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pt-space-xs">
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">Bolsas:</span>
-                    <div className="flex items-center gap-space-xs bg-surface-container-lowest rounded-full p-1 shadow-sm">
-                      <button
-                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-secondary hover:text-on-secondary text-on-surface flex items-center justify-center transition-colors"
-                        onClick={() => updateQty('grande', -1)}
-                        type="button"
-                        aria-label="Restar una bolsa grande"
-                      >
-                        <span className="material-symbols-outlined text-base">remove</span>
-                      </button>
-                      <span className="font-label-lg text-label-lg font-bold w-7 text-center">{quantities.grande}</span>
-                      <button
-                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-secondary hover:text-on-secondary text-on-surface flex items-center justify-center transition-colors"
-                        onClick={() => updateQty('grande', 1)}
-                        type="button"
-                        aria-label="Añadir una bolsa grande"
-                      >
-                        <span className="material-symbols-outlined text-base">add</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Category Card 3: Prendas Delicadas & Trajes */}
-                <div className="p-space-md bg-surface-container-low rounded-xl flex flex-col justify-between hover:shadow-md transition-shadow">
-                  <div className="flex items-start gap-space-sm mb-space-sm">
-                    <div className="w-12 h-12 rounded-lg bg-surface-container-lowest flex items-center justify-center text-tertiary shadow-sm shrink-0">
-                      <span className="material-symbols-outlined text-2xl">dry_cleaning</span>
-                    </div>
-                    <div>
-                      <h3 className="font-title-md text-title-md text-on-surface font-semibold">Delicadas & Trajes</h3>
-                      <p className="font-body-sm text-body-sm text-on-surface-variant">Seda, lana, trajes de dos piezas y abrigos</p>
-                      <span className="font-title-md text-title-md text-tertiary font-bold mt-1 inline-block">7,50 € / prenda</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pt-space-xs">
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">Prendas:</span>
-                    <div className="flex items-center gap-space-xs bg-surface-container-lowest rounded-full p-1 shadow-sm">
-                      <button
-                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-tertiary hover:text-on-tertiary text-on-surface flex items-center justify-center transition-colors"
-                        onClick={() => updateQty('delicadas', -1)}
-                        type="button"
-                        aria-label="Restar una prenda delicada"
-                      >
-                        <span className="material-symbols-outlined text-base">remove</span>
-                      </button>
-                      <span className="font-label-lg text-label-lg font-bold w-7 text-center">{quantities.delicadas}</span>
-                      <button
-                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-tertiary hover:text-on-tertiary text-on-surface flex items-center justify-center transition-colors"
-                        onClick={() => updateQty('delicadas', 1)}
-                        type="button"
-                        aria-label="Añadir una prenda delicada"
-                      >
-                        <span className="material-symbols-outlined text-base">add</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Category Card 4: Blancos & Nórdicos */}
-                <div className="p-space-md bg-surface-container-low rounded-xl flex flex-col justify-between hover:shadow-md transition-shadow">
-                  <div className="flex items-start gap-space-sm mb-space-sm">
-                    <div className="w-12 h-12 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary-container shadow-sm shrink-0">
                       <span className="material-symbols-outlined text-2xl">bed</span>
                     </div>
                     <div>
-                      <h3 className="font-title-md text-title-md text-on-surface font-semibold">Blancos & Edredones</h3>
-                      <p className="font-body-sm text-body-sm text-on-surface-variant">Nórdicos de pluma o fibra, mantas y sábanas</p>
-                      <span className="font-title-md text-title-md text-primary-container font-bold mt-1 inline-block">14,00 € / nórdico</span>
+                      <h3 className="font-title-md text-title-md text-on-surface font-semibold">Cobija Individual</h3>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant">Para cama individual o cobertor ligero</p>
+                      <span className="font-title-md text-title-md text-secondary font-bold mt-1 inline-block">
+                        $40.00 MXN / pza
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between pt-space-xs">
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">Unidades:</span>
+                    <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">Piezas:</span>
                     <div className="flex items-center gap-space-xs bg-surface-container-lowest rounded-full p-1 shadow-sm">
                       <button
-                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface flex items-center justify-center transition-colors"
-                        onClick={() => updateQty('nordicos', -1)}
+                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-secondary hover:text-on-secondary text-on-surface flex items-center justify-center transition-colors"
+                        onClick={() => updateQty('cobijaIndividual', -1)}
                         type="button"
-                        aria-label="Restar un edredón"
+                        aria-label="Restar una cobija individual"
                       >
                         <span className="material-symbols-outlined text-base">remove</span>
                       </button>
-                      <span className="font-label-lg text-label-lg font-bold w-7 text-center">{quantities.nordicos}</span>
+                      <span className="font-label-lg text-label-lg font-bold w-7 text-center">{quantities.cobijaIndividual}</span>
+                      <button
+                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-secondary hover:text-on-secondary text-on-surface flex items-center justify-center transition-colors"
+                        onClick={() => updateQty('cobijaIndividual', 1)}
+                        type="button"
+                        aria-label="Añadir una cobija individual"
+                      >
+                        <span className="material-symbols-outlined text-base">add</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Cobijas Matrimoniales */}
+                <div className="p-space-md bg-surface-container-low rounded-xl flex flex-col justify-between hover:shadow-md transition-shadow">
+                  <div className="flex items-start gap-space-sm mb-space-sm">
+                    <div className="w-12 h-12 rounded-lg bg-surface-container-lowest flex items-center justify-center text-tertiary shadow-sm shrink-0">
+                      <span className="material-symbols-outlined text-2xl">hotel</span>
+                    </div>
+                    <div>
+                      <h3 className="font-title-md text-title-md text-on-surface font-semibold">Cobija Matrimonial</h3>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant">Edredones o cobertores tamaño matrimonial</p>
+                      <span className="font-title-md text-title-md text-tertiary font-bold mt-1 inline-block">
+                        $45.00 MXN / pza
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-space-xs">
+                    <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">Piezas:</span>
+                    <div className="flex items-center gap-space-xs bg-surface-container-lowest rounded-full p-1 shadow-sm">
+                      <button
+                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-tertiary hover:text-on-tertiary text-on-surface flex items-center justify-center transition-colors"
+                        onClick={() => updateQty('cobijaMatrimonial', -1)}
+                        type="button"
+                        aria-label="Restar una cobija matrimonial"
+                      >
+                        <span className="material-symbols-outlined text-base">remove</span>
+                      </button>
+                      <span className="font-label-lg text-label-lg font-bold w-7 text-center">{quantities.cobijaMatrimonial}</span>
+                      <button
+                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-tertiary hover:text-on-tertiary text-on-surface flex items-center justify-center transition-colors"
+                        onClick={() => updateQty('cobijaMatrimonial', 1)}
+                        type="button"
+                        aria-label="Añadir una cobija matrimonial"
+                      >
+                        <span className="material-symbols-outlined text-base">add</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. Cobija King Size */}
+                <div className="p-space-md bg-surface-container-low rounded-xl flex flex-col justify-between hover:shadow-md transition-shadow">
+                  <div className="flex items-start gap-space-sm mb-space-sm">
+                    <div className="w-12 h-12 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary-container shadow-sm shrink-0">
+                      <span className="material-symbols-outlined text-2xl">king_bed</span>
+                    </div>
+                    <div>
+                      <h3 className="font-title-md text-title-md text-on-surface font-semibold">Cobija King Size</h3>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant">Edredones extra grandes tamaño King / Queen</p>
+                      <span className="font-title-md text-title-md text-primary-container font-bold mt-1 inline-block">
+                        $50.00 MXN / pza
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-space-xs">
+                    <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">Piezas:</span>
+                    <div className="flex items-center gap-space-xs bg-surface-container-lowest rounded-full p-1 shadow-sm">
                       <button
                         className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface flex items-center justify-center transition-colors"
-                        onClick={() => updateQty('nordicos', 1)}
+                        onClick={() => updateQty('cobijaKing', -1)}
                         type="button"
-                        aria-label="Añadir un edredón"
+                        aria-label="Restar una cobija king"
+                      >
+                        <span className="material-symbols-outlined text-base">remove</span>
+                      </button>
+                      <span className="font-label-lg text-label-lg font-bold w-7 text-center">{quantities.cobijaKing}</span>
+                      <button
+                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface flex items-center justify-center transition-colors"
+                        onClick={() => updateQty('cobijaKing', 1)}
+                        type="button"
+                        aria-label="Añadir una cobija king"
+                      >
+                        <span className="material-symbols-outlined text-base">add</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5. Tenis y Zapatos */}
+                <div className="p-space-md bg-surface-container-low rounded-xl flex flex-col justify-between hover:shadow-md transition-shadow">
+                  <div className="flex items-start gap-space-sm mb-space-sm">
+                    <div className="w-12 h-12 rounded-lg bg-surface-container-lowest flex items-center justify-center text-secondary shadow-sm shrink-0">
+                      <span className="material-symbols-outlined text-2xl">steps</span>
+                    </div>
+                    <div>
+                      <h3 className="font-title-md text-title-md text-on-surface font-semibold">Tenis y Zapatos</h3>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant">Limpieza profunda, agujetas y desinfección de suelas</p>
+                      <span className="font-title-md text-title-md text-secondary font-bold mt-1 inline-block">
+                        $30.00 MXN / par
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-space-xs">
+                    <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">Pares:</span>
+                    <div className="flex items-center gap-space-xs bg-surface-container-lowest rounded-full p-1 shadow-sm">
+                      <button
+                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-secondary hover:text-on-secondary text-on-surface flex items-center justify-center transition-colors"
+                        onClick={() => updateQty('tenisZapatos', -1)}
+                        type="button"
+                        aria-label="Restar un par de tenis"
+                      >
+                        <span className="material-symbols-outlined text-base">remove</span>
+                      </button>
+                      <span className="font-label-lg text-label-lg font-bold w-7 text-center">{quantities.tenisZapatos}</span>
+                      <button
+                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-secondary hover:text-on-secondary text-on-surface flex items-center justify-center transition-colors"
+                        onClick={() => updateQty('tenisZapatos', 1)}
+                        type="button"
+                        aria-label="Añadir un par de tenis"
+                      >
+                        <span className="material-symbols-outlined text-base">add</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6. Peluches */}
+                <div className="p-space-md bg-surface-container-low rounded-xl flex flex-col justify-between hover:shadow-md transition-shadow">
+                  <div className="flex items-start gap-space-sm mb-space-sm">
+                    <div className="w-12 h-12 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm shrink-0">
+                      <span className="material-symbols-outlined text-2xl">toys</span>
+                    </div>
+                    <div>
+                      <h3 className="font-title-md text-title-md text-on-surface font-semibold">Lavado de Peluches</h3>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant">
+                        Limpieza hipoalergénica cuidando relleno. Precio variable según tamaño.
+                      </p>
+                      <span className="font-title-md text-title-md text-primary font-bold mt-1 inline-block">
+                        Cotización al recibir
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-space-xs">
+                    <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">Peluches:</span>
+                    <div className="flex items-center gap-space-xs bg-surface-container-lowest rounded-full p-1 shadow-sm">
+                      <button
+                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-primary hover:text-on-primary text-on-surface flex items-center justify-center transition-colors"
+                        onClick={() => updateQty('peluches', -1)}
+                        type="button"
+                        aria-label="Restar un peluche"
+                      >
+                        <span className="material-symbols-outlined text-base">remove</span>
+                      </button>
+                      <span className="font-label-lg text-label-lg font-bold w-7 text-center">{quantities.peluches}</span>
+                      <button
+                        className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-primary hover:text-on-primary text-on-surface flex items-center justify-center transition-colors"
+                        onClick={() => updateQty('peluches', 1)}
+                        type="button"
+                        aria-label="Añadir un peluche"
                       >
                         <span className="material-symbols-outlined text-base">add</span>
                       </button>
@@ -331,30 +431,25 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                 </div>
               </div>
 
-              {/* Add-on Service Banner: Planchado Artesanal Extra */}
-              <div className="p-space-md bg-surface-container rounded-xl flex flex-col sm:flex-row items-center justify-between gap-space-md">
-                <div className="flex items-center gap-space-sm">
-                  <span className="material-symbols-outlined text-3xl text-primary">iron</span>
-                  <div>
-                    <p className="font-title-md text-title-md font-semibold text-on-surface">Pack Planchado Artesanal (10 camisas o prendas)</p>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">Acabado impecable sobre percha biodegradable con funda protectora</p>
+              {/* Peluche size detail dropdown if > 0 */}
+              {quantities.peluches > 0 && (
+                <div className="p-space-sm bg-surface-container rounded-xl flex items-center justify-between gap-space-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-lg">info</span>
+                    <span className="font-body-sm text-body-sm text-on-surface">Tamaño principal de tus peluches:</span>
                   </div>
-                </div>
-                <div className="flex items-center gap-space-md shrink-0">
-                  <span className="font-title-md text-title-md font-bold text-primary">+12,00 €</span>
-                  <button
-                    className={`px-space-md py-1.5 rounded-full font-label-md text-label-md transition-all shadow-sm ${
-                      hasIronPack
-                        ? 'bg-primary text-on-primary'
-                        : 'bg-surface-container-lowest text-primary hover:bg-primary hover:text-on-primary'
-                    }`}
-                    onClick={() => setHasIronPack(!hasIronPack)}
-                    type="button"
+                  <select
+                    value={pelucheSizes}
+                    onChange={(e) => setPelucheSizes(e.target.value)}
+                    className="px-space-md py-1.5 rounded-lg bg-surface text-on-surface font-label-md text-label-md border border-outline-variant focus:outline-none"
                   >
-                    {hasIronPack ? 'Añadido ✓' : 'Añadir al pedido'}
-                  </button>
+                    <option value="Chico">Chico (hasta 25 cm)</option>
+                    <option value="Mediano">Mediano (25 a 50 cm)</option>
+                    <option value="Grande">Grande (50 a 90 cm)</option>
+                    <option value="Gigante">Gigante (+90 cm)</option>
+                  </select>
                 </div>
-              </div>
+              )}
 
               {/* Custom Washing Preferences */}
               <div className="pt-space-md space-y-space-md">
@@ -398,7 +493,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                       onClick={() => setDetergent('lanas')}
                       type="button"
                     >
-                      Especial Lanas & Sedas
+                      Especial Fibras Finas
                     </button>
                   </div>
                 </div>
@@ -411,7 +506,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                       className="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer accent-primary"
                       type="checkbox"
                     />
-                    <span className="font-body-sm text-body-sm text-on-surface">Agua fría sustentable para preservar colores</span>
+                    <span className="font-body-sm text-body-sm text-on-surface">Agua filtrada para preservar colores y fibras</span>
                   </label>
                   <label className="flex items-center gap-space-sm p-space-sm bg-surface-container-low rounded-lg cursor-pointer hover:bg-surface-container transition-colors">
                     <input
@@ -432,7 +527,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                 <span className="w-8 h-8 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center font-bold text-label-md">2</span>
                 <div>
                   <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">Dirección de Recogida & Contacto</h2>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant">Un repartidor de Las Danis recogerá la cesta en el lugar indicado</p>
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">Nuestro repartidor de Las Danis pasará por tus prendas</p>
                 </div>
               </div>
 
@@ -441,7 +536,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                   <label className="block font-label-md text-label-md text-on-surface mb-1">Nombre Completo *</label>
                   <input
                     className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all"
-                    placeholder="Tu nombre"
+                    placeholder="Tu nombre completo"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -450,10 +545,10 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                 <div>
                   <label className="block font-label-md text-label-md text-on-surface mb-1">Teléfono Móvil / WhatsApp *</label>
                   <div className="flex items-center">
-                    <span className="px-3 py-2.5 bg-surface-container text-on-surface-variant rounded-l-lg font-label-md text-label-md">+34</span>
+                    <span className="px-3 py-2.5 bg-surface-container text-on-surface-variant rounded-l-lg font-label-md text-label-md">+52</span>
                     <input
                       className="w-full px-space-md py-2.5 rounded-r-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all"
-                      placeholder="Número de contacto"
+                      placeholder="55 1234 5678"
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
@@ -461,20 +556,20 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                   </div>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block font-label-md text-label-md text-on-surface mb-1">Calle, Número y Portal *</label>
+                  <label className="block font-label-md text-label-md text-on-surface mb-1">Calle, Número y Colonia *</label>
                   <input
                     className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all"
-                    placeholder="Ej. Calle Gran Vía 12"
+                    placeholder="Ej. Av. Insurgentes Sur 450, Col. Roma"
                     type="text"
                     value={street}
                     onChange={(e) => setStreet(e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="block font-label-md text-label-md text-on-surface mb-1">Piso / Puerta</label>
+                  <label className="block font-label-md text-label-md text-on-surface mb-1">Piso / Depto / Interior</label>
                   <input
                     className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all"
-                    placeholder="Ej. 3º Izquierda"
+                    placeholder="Ej. Depto 402"
                     type="text"
                     value={floor}
                     onChange={(e) => setFloor(e.target.value)}
@@ -484,17 +579,17 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                   <label className="block font-label-md text-label-md text-on-surface mb-1">Código Postal *</label>
                   <input
                     className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all"
-                    placeholder="28001"
+                    placeholder="06700"
                     type="text"
                     value={postalCode}
                     onChange={(e) => setPostalCode(e.target.value)}
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block font-label-md text-label-md text-on-surface mb-1">Instrucciones para el Conserje / Repartidor (Opcional)</label>
+                  <label className="block font-label-md text-label-md text-on-surface mb-1">Instrucciones o referencias (Opcional)</label>
                   <textarea
                     className="w-full px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all resize-none"
-                    placeholder="Ej: Portería con conserje de 9 a 14h, o llamar al interfono 4B."
+                    placeholder="Ej. Portón negro, avisar en caseta de vigilancia, etc."
                     rows={2}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
@@ -503,19 +598,75 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            {/* SECTION 3: Date & Slot Selection */}
+            {/* SECTION 3: Date, Slot & Delivery Speed */}
             <div className="bg-surface-container-lowest rounded-xl p-space-lg lg:p-space-xl shadow-sm space-y-space-lg">
               <div className="flex items-center gap-space-sm">
                 <span className="w-8 h-8 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-bold text-label-md">3</span>
                 <div>
-                  <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">Fecha y Franja de Recogida</h2>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant">Selecciona el momento en que mejor te convenga que pasemos</p>
+                  <h2 className="font-headline-sm text-headline-sm text-on-surface font-bold">Fecha, Franja y Velocidad de Entrega</h2>
+                  <p className="font-body-sm text-body-sm text-on-surface-variant">Selecciona cuándo pasamos y la velocidad deseada</p>
+                </div>
+              </div>
+
+              {/* Speed of Delivery Option */}
+              <div className="space-y-space-xs">
+                <label className="font-label-md text-label-md text-on-surface-variant block font-semibold">Modalidad de Entrega:</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+                  <label
+                    className={`p-space-md rounded-xl cursor-pointer flex items-start gap-space-sm transition-colors ${
+                      speed === 'standard' ? 'bg-secondary-fixed/30 border-2 border-secondary' : 'bg-surface-container-low hover:bg-surface-container'
+                    }`}
+                  >
+                    <input
+                      checked={speed === 'standard'}
+                      onChange={() => setSpeed('standard')}
+                      className="mt-1 accent-primary"
+                      name="speed"
+                      type="radio"
+                      value="standard"
+                    />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-title-md text-title-md font-bold text-on-surface">Servicio Estándar</span>
+                        <span className="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+                          $18 MXN / kg
+                        </span>
+                      </div>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                        Entrega habitual en 24 a 48 horas. Cuidado tranquilo y secado natural suave.
+                      </p>
+                    </div>
+                  </label>
+
+                  <label
+                    className={`p-space-md rounded-xl cursor-pointer flex items-start gap-space-sm transition-colors ${
+                      speed === 'express' ? 'bg-primary-fixed/30 border-2 border-primary' : 'bg-surface-container-low hover:bg-surface-container'
+                    }`}
+                  >
+                    <input
+                      checked={speed === 'express'}
+                      onChange={() => setSpeed('express')}
+                      className="mt-1 accent-primary"
+                      name="speed"
+                      type="radio"
+                      value="express"
+                    />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-title-md text-title-md font-bold text-on-surface">⚡ Servicio Express</span>
+                        <span className="font-label-md text-label-md font-bold text-primary">$22 MXN / kg</span>
+                      </div>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                        <strong>¡Entrega el mismo día!</strong> Recogemos por la mañana y te entregamos por la tarde/noche.
+                      </p>
+                    </div>
+                  </label>
                 </div>
               </div>
 
               {/* Day Selector Pills */}
-              <div className="space-y-space-xs">
-                <label className="font-label-md text-label-md text-on-surface-variant block">Día de Recogida:</label>
+              <div className="space-y-space-xs pt-space-xs">
+                <label className="font-label-md text-label-md text-on-surface-variant block font-semibold">Día de Recogida:</label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-space-sm">
                   {[
                     { key: 'Hoy', label: 'Hoy', date: 'Jueves 24', status: 'Disponible' },
@@ -545,7 +696,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
 
               {/* Time Slots */}
               <div className="space-y-space-xs pt-space-xs">
-                <label className="font-label-md text-label-md text-on-surface-variant block">Franja Horaria:</label>
+                <label className="font-label-md text-label-md text-on-surface-variant block font-semibold">Franja Horaria:</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-space-sm">
                   {[
                     { key: 'Mañana', title: 'Mañana', time: '08:30 - 11:30' },
@@ -581,62 +732,6 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                   })}
                 </div>
               </div>
-
-              {/* Speed of Delivery Option */}
-              <div className="pt-space-sm space-y-space-xs">
-                <label className="font-label-md text-label-md text-on-surface-variant block">Velocidad de Entrega:</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
-                  <label
-                    className={`p-space-md rounded-xl cursor-pointer flex items-start gap-space-sm transition-colors ${
-                      speed === 'standard' ? 'bg-secondary-fixed/30 border border-secondary/30' : 'bg-surface-container-low hover:bg-surface-container'
-                    }`}
-                  >
-                    <input
-                      checked={speed === 'standard'}
-                      onChange={() => setSpeed('standard')}
-                      className="mt-1 accent-primary"
-                      name="speed"
-                      type="radio"
-                      value="standard"
-                    />
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-title-md text-title-md font-bold text-on-surface">Estándar 48 Horas</span>
-                        <span className="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
-                          Gratis
-                        </span>
-                      </div>
-                      <p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
-                        Lavado tranquilo, secado natural suave y entrega perfecta.
-                      </p>
-                    </div>
-                  </label>
-
-                  <label
-                    className={`p-space-md rounded-xl cursor-pointer flex items-start gap-space-sm transition-colors ${
-                      speed === 'express' ? 'bg-primary-fixed/30 border border-primary/30' : 'bg-surface-container-low hover:bg-surface-container'
-                    }`}
-                  >
-                    <input
-                      checked={speed === 'express'}
-                      onChange={() => setSpeed('express')}
-                      className="mt-1 accent-primary"
-                      name="speed"
-                      type="radio"
-                      value="express"
-                    />
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-title-md text-title-md font-bold text-on-surface">Servicio Express 24h</span>
-                        <span className="font-label-md text-label-md font-bold text-primary">+3,00 €</span>
-                      </div>
-                      <p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
-                        Recogemos hoy y tus prendas vuelven limpias mañana.
-                      </p>
-                    </div>
-                  </label>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -650,61 +745,69 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
 
               {/* Items Breakdown */}
               <div className="space-y-space-xs font-body-sm text-body-sm">
-                {quantities.diario > 0 && (
+                {quantities.kilosRopa > 0 && (
                   <div className="flex justify-between items-center py-1">
                     <span className="text-on-surface-variant">
-                      {quantities.diario}x Bolsa Diaria (5kg)
+                      {quantities.kilosRopa} kg Ropa ({speed === 'express' ? '$22/kg express' : '$18/kg normal'})
                     </span>
                     <span className="font-medium text-on-surface">
-                      {formatCurrency(quantities.diario * PRICES.diario)}
+                      {formatCurrency(quantities.kilosRopa * kiloPrice)}
                     </span>
                   </div>
                 )}
 
-                {quantities.grande > 0 && (
+                {quantities.cobijaIndividual > 0 && (
                   <div className="flex justify-between items-center py-1">
                     <span className="text-on-surface-variant">
-                      {quantities.grande}x Bolsa Grande (10kg)
+                      {quantities.cobijaIndividual}x Cobija Individual ($40)
                     </span>
                     <span className="font-medium text-on-surface">
-                      {formatCurrency(quantities.grande * PRICES.grande)}
+                      {formatCurrency(quantities.cobijaIndividual * PRICES.cobijaIndividual)}
                     </span>
                   </div>
                 )}
 
-                {quantities.delicadas > 0 && (
+                {quantities.cobijaMatrimonial > 0 && (
                   <div className="flex justify-between items-center py-1">
                     <span className="text-on-surface-variant">
-                      {quantities.delicadas}x Prenda Delicada / Traje
+                      {quantities.cobijaMatrimonial}x Cobija Matrimonial ($45)
                     </span>
                     <span className="font-medium text-on-surface">
-                      {formatCurrency(quantities.delicadas * PRICES.delicadas)}
+                      {formatCurrency(quantities.cobijaMatrimonial * PRICES.cobijaMatrimonial)}
                     </span>
                   </div>
                 )}
 
-                {quantities.nordicos > 0 && (
+                {quantities.cobijaKing > 0 && (
                   <div className="flex justify-between items-center py-1">
                     <span className="text-on-surface-variant">
-                      {quantities.nordicos}x Blancos & Edredón
+                      {quantities.cobijaKing}x Cobija King Size ($50)
                     </span>
                     <span className="font-medium text-on-surface">
-                      {formatCurrency(quantities.nordicos * PRICES.nordicos)}
+                      {formatCurrency(quantities.cobijaKing * PRICES.cobijaKing)}
                     </span>
                   </div>
                 )}
 
-                {hasIronPack && (
+                {quantities.tenisZapatos > 0 && (
                   <div className="flex justify-between items-center py-1">
-                    <span className="text-on-surface-variant">Pack Planchado Artesanal</span>
-                    <span className="font-medium text-on-surface">{formatCurrency(PRICES.ironPack)}</span>
+                    <span className="text-on-surface-variant">
+                      {quantities.tenisZapatos}x Tenis y Zapatos ($30 / par)
+                    </span>
+                    <span className="font-medium text-on-surface">
+                      {formatCurrency(quantities.tenisZapatos * PRICES.tenisZapatos)}
+                    </span>
                   </div>
                 )}
 
-                {speed === 'express' && (
-                  <div className="flex justify-between items-center py-1">
-                    <span className="text-on-surface-variant">Suplemento Exprés 24h</span>
-                    <span className="font-medium text-on-surface">{formatCurrency(PRICES.express)}</span>
+                {quantities.peluches > 0 && (
+                  <div className="flex justify-between items-center py-1 text-primary">
+                    <span className="text-on-surface-variant">
+                      {quantities.peluches}x Peluche ({pelucheSizes})
+                    </span>
+                    <span className="font-medium text-primary text-xs">
+                      A cotizar según tamaño
+                    </span>
                   </div>
                 )}
 
@@ -712,7 +815,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                 <div className="flex justify-between items-center py-1 text-secondary font-medium">
                   <span className="flex items-center gap-1">
                     <span className="material-symbols-outlined text-sm">verified</span>
-                    Recogida y Entrega
+                    Recogida y Entrega a Domicilio
                   </span>
                   <span className="uppercase tracking-wide font-bold">¡GRATIS!</span>
                 </div>
@@ -736,7 +839,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                   </span>
                 </div>
                 <p className="font-label-sm text-label-sm text-on-surface-variant">
-                  IVA incluido. Pago verificado sin comisiones extra.
+                  {quantities.peluches > 0 ? '* Total base + cotización final de peluches al recibir.' : 'Precios en pesos mexicanos (MXN).'}
                 </p>
               </div>
 
@@ -746,6 +849,28 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                 <div className="space-y-1.5">
                   <label className="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
                     <input
+                      checked={paymentMethod === 'cash'}
+                      onChange={() => setPaymentMethod('cash')}
+                      className="accent-primary"
+                      name="pay-method"
+                      type="radio"
+                    />
+                    <span className="material-symbols-outlined text-tertiary text-base">payments</span>
+                    <span className="font-body-sm text-body-sm text-on-surface font-medium">Efectivo contra entrega al recibir</span>
+                  </label>
+                  <label className="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+                    <input
+                      checked={paymentMethod === 'transfer'}
+                      onChange={() => setPaymentMethod('transfer')}
+                      className="accent-primary"
+                      name="pay-method"
+                      type="radio"
+                    />
+                    <span className="material-symbols-outlined text-primary text-base">account_balance</span>
+                    <span className="font-body-sm text-body-sm text-on-surface font-medium">Transferencia bancaria / SPEI</span>
+                  </label>
+                  <label className="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+                    <input
                       checked={paymentMethod === 'card'}
                       onChange={() => setPaymentMethod('card')}
                       className="accent-primary"
@@ -753,29 +878,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                       type="radio"
                     />
                     <span className="material-symbols-outlined text-secondary text-base">credit_card</span>
-                    <span className="font-body-sm text-body-sm text-on-surface font-medium">Tarjeta en línea al reservar</span>
-                  </label>
-                  <label className="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
-                    <input
-                      checked={paymentMethod === 'bizum'}
-                      onChange={() => setPaymentMethod('bizum')}
-                      className="accent-primary"
-                      name="pay-method"
-                      type="radio"
-                    />
-                    <span className="material-symbols-outlined text-primary text-base">smartphone</span>
-                    <span className="font-body-sm text-body-sm text-on-surface font-medium">Bizum instantáneo</span>
-                  </label>
-                  <label className="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
-                    <input
-                      checked={paymentMethod === 'cash'}
-                      onChange={() => setPaymentMethod('cash')}
-                      className="accent-primary"
-                      name="pay-method"
-                      type="radio"
-                    />
-                    <span className="material-symbols-outlined text-tertiary text-base">handshake</span>
-                    <span className="font-body-sm text-body-sm text-on-surface font-medium">En mano al recibir las prendas</span>
+                    <span className="font-body-sm text-body-sm text-on-surface font-medium">Tarjeta con terminal al recibir</span>
                   </label>
                 </div>
               </div>
@@ -791,7 +894,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
               </button>
 
               <p className="font-label-sm text-label-sm text-center text-on-surface-variant">
-                Cancela o reprograma de forma gratuita hasta 1 hora antes de la cita.
+                Cancela o reprograma sin costo avisando con 1 hora de anticipación.
               </p>
             </div>
 
@@ -820,7 +923,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
                   <span className="material-symbols-outlined text-xl">compost</span>
                 </div>
                 <div>
-                  <p className="font-label-md text-label-md font-bold text-on-surface">Bolsas Selladas Compostables</p>
+                  <p className="font-label-md text-label-md font-bold text-on-surface">Bolsas Selladas e Higiénicas</p>
                   <p className="font-label-sm text-label-sm text-on-surface-variant">Máxima higiene, libre de polvo y 100% ecológico.</p>
                 </div>
               </div>
@@ -833,9 +936,9 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
           <div className="flex items-center gap-space-md">
             <span className="material-symbols-outlined text-3xl text-secondary">help_center</span>
             <div>
-              <h4 className="font-title-md text-title-md font-bold text-on-surface">¿Tienes alguna duda sobre tus prendas?</h4>
+              <h4 className="font-title-md text-title-md font-bold text-on-surface">¿Tienes alguna duda sobre tus prendas o peluches?</h4>
               <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Consulta cómo clasificamos el peso o indícanos detalles específicos al repartidor.
+                Consulta cómo pesamos tu ropa o indícanos detalles específicos al repartidor.
               </p>
             </div>
           </div>
@@ -848,7 +951,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
             </button>
             <a
               className="px-space-md py-2 rounded-full bg-secondary text-on-secondary font-label-md text-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-colors shadow-sm flex items-center gap-1.5"
-              href="https://wa.me/34612345678"
+              href="https://wa.me/525598765432"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -872,12 +975,18 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
             </p>
             <div className="bg-surface-container-low p-space-md rounded-2xl text-left space-y-1 font-body-sm text-body-sm">
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Total a pagar:</span>
+                <span className="text-on-surface-variant">Modalidad:</span>
+                <span className="font-semibold text-primary">{speed === 'express' ? '⚡ Express (Mismo Día)' : 'Estándar'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-on-surface-variant">Total estimado a pagar:</span>
                 <span className="font-bold text-primary font-title-md">{formatCurrency(total)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Método:</span>
-                <span className="capitalize font-medium">{paymentMethod === 'card' ? 'Tarjeta en línea' : paymentMethod === 'bizum' ? 'Bizum' : 'En mano'}</span>
+                <span className="text-on-surface-variant">Método de pago:</span>
+                <span className="capitalize font-medium">
+                  {paymentMethod === 'card' ? 'Tarjeta al recibir' : paymentMethod === 'transfer' ? 'Transferencia / SPEI' : 'Efectivo al recibir'}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-on-surface-variant">Contacto:</span>
@@ -885,7 +994,7 @@ export const AgendarPage: React.FC<AgendarPageProps> = ({ onNavigate }) => {
               </div>
             </div>
             <p className="font-label-sm text-label-sm text-on-surface-variant">
-              Te hemos enviado los detalles por WhatsApp. ¡Gracias por confiar en el equipo de Las Danis!
+              Te hemos enviado los detalles por WhatsApp para confirmar al momento. ¡Gracias por confiar en Las Danis!
             </p>
             <div className="pt-space-xs flex gap-space-sm justify-center">
               <button

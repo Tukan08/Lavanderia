@@ -70,15 +70,15 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <div className="space-y-space-xs font-body-sm text-body-sm text-on-surface-variant">
               <div className="flex items-start gap-space-xs">
                 <span className="material-symbols-outlined text-secondary text-base shrink-0 mt-0.5">location_on</span>
-                <span>Calle del Sol 42, Barrio Bella Vista, 28001 Madrid</span>
+                <span>Av. Insurgentes Sur 450, Col. Roma Sur, CDMX</span>
               </div>
               <div className="flex items-center gap-space-xs">
                 <span className="material-symbols-outlined text-secondary text-base shrink-0">call</span>
-                <span>+34 900 123 456</span>
+                <span>+52 55 1234 5678</span>
               </div>
               <div className="flex items-center gap-space-xs">
                 <span className="material-symbols-outlined text-secondary text-base shrink-0">mark_chat_unread</span>
-                <span className="text-secondary font-medium">WhatsApp Directo: +34 612 345 678</span>
+                <span className="text-secondary font-medium">WhatsApp Directo: +52 55 9876 5432</span>
               </div>
             </div>
           </div>
